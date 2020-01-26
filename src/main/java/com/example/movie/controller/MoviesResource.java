@@ -9,8 +9,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.Optional;
+
 @Controller
-@RequestMapping(path="/movies")
+@RequestMapping(path = "/movies")
 public class MoviesResource {
 
     @Autowired
@@ -22,20 +26,29 @@ public class MoviesResource {
         this.moviesService = moviesService;
     }
 
-    @PostMapping(path="/add")
-    public @ResponseBody ResponseEntity<Movies> addNewMovie(@RequestParam String name
+    @PostMapping(path = "/add")
+    public @ResponseBody
+    ResponseEntity<Movies> addNewMovie(@RequestParam String name
             , @RequestParam String url) {
 
-        System.out.println(name);
         Movies movieAdded = this.moviesService.addNewMovie(name, url);
 
         return new ResponseEntity<>(movieAdded, HttpStatus.CREATED);
     }
 
-    @GetMapping(path="/all")
+    @GetMapping(path = "/all")
     public @ResponseBody
     Iterable<Movies> getAllMovies() {
-        System.out.println(moviesRepository.findAll());
-        return moviesRepository.findAll();
+
+        Iterable<Movies> movies = this.moviesService.getAllMovies();
+        return movies;
+    }
+
+    @GetMapping(path = "/{id}")
+    public @ResponseBody
+    Optional<Movies> getMovie(@PathVariable("id") final int id) throws GeneralSecurityException, IOException {
+
+        Optional<Movies> movie = this.moviesService.getMovie(id);
+        return movie;
     }
 }
