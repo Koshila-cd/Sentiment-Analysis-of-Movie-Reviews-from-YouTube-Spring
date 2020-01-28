@@ -1,6 +1,7 @@
 package com.example.movie.entity;
 
 import javax.persistence.*;
+import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "movies")
@@ -13,6 +14,8 @@ public class Movies {
     private String movie_name;
 
     private String trailer_url;
+
+    private ZonedDateTime lastcommenttime;
 
     public Integer getMovie_id() {
         return movie_id;
@@ -38,12 +41,21 @@ public class Movies {
         this.trailer_url = trailer_url;
     }
 
+    public ZonedDateTime getLastcommenttime() {
+        return lastcommenttime;
+    }
+
+    public void setLastcommenttime(ZonedDateTime lastcommenttime) {
+        this.lastcommenttime = lastcommenttime;
+    }
+
     @Override
     public String toString() {
-        return "Movie{" +
+        return "Movies{" +
                 "movie_id=" + movie_id +
                 ", movie_name='" + movie_name + '\'' +
                 ", trailer_url='" + trailer_url + '\'' +
+                ", lastcommenttime=" + lastcommenttime +
                 '}';
     }
 }

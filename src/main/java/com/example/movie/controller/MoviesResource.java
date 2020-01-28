@@ -3,6 +3,7 @@ package com.example.movie.controller;
 import com.example.movie.entity.Movies;
 import com.example.movie.repository.MoviesRepository;
 import com.example.movie.service.MoviesService;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class MoviesResource {
     @PostMapping(path = "/add")
     public @ResponseBody
     ResponseEntity<Movies> addNewMovie(@RequestParam String name
-            , @RequestParam String url) {
+            , @RequestParam String url) throws GeneralSecurityException, IOException, ParseException {
 
         Movies movieAdded = this.moviesService.addNewMovie(name, url);
 
@@ -46,7 +47,7 @@ public class MoviesResource {
 
     @GetMapping(path = "/{id}")
     public @ResponseBody
-    Optional<Movies> getMovie(@PathVariable("id") final int id) throws GeneralSecurityException, IOException {
+    Optional<Movies> getMovie(@PathVariable("id") final int id) throws GeneralSecurityException, IOException, ParseException {
 
         Optional<Movies> movie = this.moviesService.getMovie(id);
         return movie;

@@ -8,10 +8,15 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.CommentThreadListResponse;
+import jdk.nashorn.api.scripting.ScriptUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 @Service
@@ -35,14 +40,21 @@ public class MoviesServiceImpl implements MoviesService {
      * @return Movies
      */
     @Override
-    public Movies addNewMovie(String name, String url) {
+    public Movies addNewMovie(String name, String url) throws GeneralSecurityException, IOException, ParseException {
 
         Movies movies = new Movies();
         movies.setMovie_name("Venom");
         movies.setTrailer_url("https://www.youtube.com/watch?v=u9Mv98Gr5pY");
+
+        String videoId;
+
+        String[] vId = url.split("watch\\?v=");
+        videoId = vId[1];
+
+        getComments(videoId);
+
         moviesRepository.save(movies);
 
-        System.out.println(movies);
         return movies;
     }
 
@@ -67,17 +79,11 @@ public class MoviesServiceImpl implements MoviesService {
      * @throws GeneralSecurityException, IOException
      */
     @Override
-    public Optional<Movies> getMovie(final Integer id) throws GeneralSecurityException, IOException {
+    public Optional<Movies> getMovie(final Integer id) throws GeneralSecurityException, IOException, ParseException {
 
         Optional<Movies> movie = this.moviesRepository.findById(id);
-        String videoId;
 
-        if (movie != null) {
-            String[] vId = movie.get().getTrailer_url().split("watch\\?v=");
-            videoId = vId[1];
-
-            getComments(videoId);
-        }
+        getComments("u9Mv98Gr5pY");
         return movie;
     }
 
@@ -98,18 +104,33 @@ public class MoviesServiceImpl implements MoviesService {
     /**
      * Call function to create API service object. Define and
      * execute API request. Print API response.
-     *
+     *moviesRepository.save(movies);
      * @throws GeneralSecurityException, IOException
      */
-    public void getComments(String videoId) throws GeneralSecurityException, IOException {
+    public void getComments(String videoId) throws GeneralSecurityException, IOException, ParseException {
         YouTube youtubeService = getService();
+
+        ZonedDateTime lastComment;
         // Define and execute the API request
         YouTube.CommentThreads.List request = youtubeService.commentThreads()
                 .list("snippet,replies");
         CommentThreadListResponse response = request.setKey(DEVELOPER_KEY)
                 .setVideoId(videoId)
-                .setMaxResults(1L)
+                .setMaxResults(2L)
                 .execute();
-        System.out.println(response);
+
+//        JSONParser parser = new JSONParser();
+//        Object comments = parser.parse(String.valueOf(parser));
+//        JSONArray array = (JSONArray)comments;
+//        System.out.println(array.get(0));
+
+
+        response.getItems().forEach(item -> {
+            item.getSnippet().forEach((snippet, s) -> {
+                System.out.println(snippet);
+                System.out.println(s);
+            });
+        });
+
     }
 }
