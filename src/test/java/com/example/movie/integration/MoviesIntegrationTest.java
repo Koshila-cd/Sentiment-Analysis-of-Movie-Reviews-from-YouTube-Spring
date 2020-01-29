@@ -10,16 +10,7 @@
  *  unless prior written permission is obtained from Informatics Institute of Technology
  */
 
-package com.example.movie;
+package com.example.movie.integration;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
-@SpringBootTest
-class DemoApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
-
+public class MoviesIntegrationTest {
 }
