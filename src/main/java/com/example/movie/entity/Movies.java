@@ -3,7 +3,6 @@ package com.example.movie.entity;
 import com.google.api.client.util.DateTime;
 
 import javax.persistence.*;
-import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "movies")
