@@ -13,6 +13,7 @@
 package com.example.movie.service;
 
 import com.example.movie.entity.Movies;
+import com.example.movie.entity.MoviesVO;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
@@ -24,10 +25,10 @@ public interface MoviesService {
     /**
      * add Movies.
      *
-     * @param name
+     * @param moviesVO a new Movie to be added from {@link MoviesVO}
      * @return url
      */
-    public Movies addNewMovie(String name, String url) throws GeneralSecurityException, IOException, ParseException;
+    public Movies addNewMovie(MoviesVO moviesVO) throws GeneralSecurityException, IOException, ParseException;
 
     public Iterable<Movies> getAllMovies();
 

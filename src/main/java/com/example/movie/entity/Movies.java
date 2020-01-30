@@ -1,5 +1,7 @@
 package com.example.movie.entity;
 
+import com.google.api.client.util.DateTime;
+
 import javax.persistence.*;
 import java.time.ZonedDateTime;
 
@@ -9,53 +11,57 @@ public class Movies {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer movie_id;
+    @Column(name = "movie_id")
+    private Integer movieId;
 
-    private String movie_name;
+    @Column(name = "movie_name")
+    private String movieName;
 
-    private String trailer_url;
+    @Column(name = "trailer_url")
+    private String trailerUrl;
 
-    private ZonedDateTime lastcommenttime;
+    @Column(name = "lastcommenttime")
+    private DateTime lastCommentTime;
 
-    public Integer getMovie_id() {
-        return movie_id;
+    public Integer getMovieId() {
+        return movieId;
     }
 
-    public void setMovie_id(Integer movie_id) {
-        this.movie_id = movie_id;
+    public void setMovieId(Integer movieId) {
+        this.movieId = movieId;
     }
 
-    public String getMovie_name() {
-        return movie_name;
+    public String getMovieName() {
+        return movieName;
     }
 
-    public void setMovie_name(String movie_name) {
-        this.movie_name = movie_name;
+    public void setMovieName(String movieName) {
+        this.movieName = movieName;
     }
 
-    public String getTrailer_url() {
-        return trailer_url;
+    public String getTrailerUrl() {
+        return trailerUrl;
     }
 
-    public void setTrailer_url(String trailer_url) {
-        this.trailer_url = trailer_url;
+    public void setTrailerUrl(String trailerUrl) {
+        this.trailerUrl = trailerUrl;
     }
 
-    public ZonedDateTime getLastcommenttime() {
-        return lastcommenttime;
+    public DateTime getLastCommentTime() {
+        return lastCommentTime;
     }
 
-    public void setLastcommenttime(ZonedDateTime lastcommenttime) {
-        this.lastcommenttime = lastcommenttime;
+    public void setLastCommentTime(DateTime lastCommentTime) {
+        this.lastCommentTime = lastCommentTime;
     }
 
     @Override
     public String toString() {
         return "Movies{" +
-                "movie_id=" + movie_id +
-                ", movie_name='" + movie_name + '\'' +
-                ", trailer_url='" + trailer_url + '\'' +
-                ", lastcommenttime=" + lastcommenttime +
+                "movieId=" + movieId +
+                ", movieName='" + movieName + '\'' +
+                ", trailerUrl='" + trailerUrl + '\'' +
+                ", lastCommentTime=" + lastCommentTime +
                 '}';
     }
 }

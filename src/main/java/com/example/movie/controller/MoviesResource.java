@@ -13,6 +13,7 @@
 package com.example.movie.controller;
 
 import com.example.movie.entity.Movies;
+import com.example.movie.entity.MoviesVO;
 import com.example.movie.repository.MoviesRepository;
 import com.example.movie.service.MoviesService;
 import org.json.simple.parser.ParseException;
@@ -41,10 +42,9 @@ public class MoviesResource {
 
     @PostMapping(path = "/add")
     public @ResponseBody
-    ResponseEntity<Movies> addNewMovie(@RequestParam String name
-            , @RequestParam String url) throws GeneralSecurityException, IOException, ParseException {
+    ResponseEntity<Movies> addNewMovie(@RequestBody MoviesVO moviesVO) throws GeneralSecurityException, IOException, ParseException {
 
-        Movies movieAdded = this.moviesService.addNewMovie(name, url);
+        Movies movieAdded = this.moviesService.addNewMovie(moviesVO);
 
         return new ResponseEntity<>(movieAdded, HttpStatus.CREATED);
     }
