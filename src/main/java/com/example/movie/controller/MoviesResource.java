@@ -15,6 +15,7 @@ package com.example.movie.controller;
 import com.example.movie.entity.Movies;
 import com.example.movie.entity.MoviesVO;
 import com.example.movie.repository.MoviesRepository;
+import com.example.movie.service.CommentAnalysisService;
 import com.example.movie.service.MoviesService;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,5 +64,19 @@ public class MoviesResource {
 
         Optional<Movies> movie = this.moviesService.getMovie(id);
         return movie;
+    }
+
+    @Autowired
+    private CommentAnalysisService commentAnalysisService;
+
+    @GetMapping("analysingComments/{id}")
+    public void analysingComments(@PathVariable("id") String id){
+        try {
+            commentAnalysisService.analysingComments(id);
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
