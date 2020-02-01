@@ -16,13 +16,8 @@ import com.example.movie.entity.MovieDetails;
 import com.example.movie.entity.Movies;
 import com.example.movie.entity.MoviesVO;
 import com.example.movie.repository.MoviesRepository;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.model.CommentThreadListResponse;
 import com.google.api.services.youtube.model.VideoListResponse;
 import org.springframework.stereotype.Service;
 
@@ -34,16 +29,17 @@ import java.util.Optional;
 public class MoviesServiceImpl implements MoviesService {
 
     private final MoviesRepository moviesRepository;
+    private final YouTubeService youTubeService;
+    private final CommentAnalysisService commentAnalysisService;
 
     private static final String DEVELOPER_KEY = "AIzaSyBmOXI6Fvazn_IXX9YjjoOOptUk26zLIkU";
-
-    private static final String APPLICATION_NAME = "API code samples";
-    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private DateTime lastCommentTime;
-    private MovieDetails movieDetails = new MovieDetails();
+//    private MovieDetails movieDetails = new MovieDetails();
 
-    public MoviesServiceImpl(MoviesRepository moviesRepository) {
+    public MoviesServiceImpl(MoviesRepository moviesRepository, YouTubeService youTubeService, CommentAnalysisService commentAnalysisService) {
         this.moviesRepository = moviesRepository;
+        this.youTubeService = youTubeService;
+        this.commentAnalysisService = commentAnalysisService;
     }
 
     /**
@@ -62,11 +58,10 @@ public class MoviesServiceImpl implements MoviesService {
         String[] vId = moviesVO.getTrailerUrl().split("watch\\?v=");
         String videoId = vId[1];
 
-        getComments(videoId);
+        commentAnalysisService.analysingComments("9ItBvH5J6ss");
 
-        movies.setLastCommentTime(lastCommentTime);
-        System.out.println(movies);
-        moviesRepository.save(movies);
+//        movies.setLastCommentTime(time);
+//        moviesRepository.save(movies);
 
         return movies;
     }
@@ -98,18 +93,6 @@ public class MoviesServiceImpl implements MoviesService {
         return movie;
     }
 
-    /**
-     * Build and return an authorized API client service.
-     *
-     * @return an authorized API client service
-     * @throws GeneralSecurityException, IOException
-     */
-    public static YouTube getService() throws GeneralSecurityException, IOException {
-        final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-        return new YouTube.Builder(httpTransport, JSON_FACTORY, null)
-                .setApplicationName(APPLICATION_NAME)
-                .build();
-    }
 
 
     /**
@@ -118,25 +101,23 @@ public class MoviesServiceImpl implements MoviesService {
      *moviesRepository.save(movies);
      * @throws GeneralSecurityException, IOException
      */
-    public DateTime getComments(String videoId) throws GeneralSecurityException, IOException {
-        YouTube youtubeService = getService();
-
-        // Define and execute the API request
-        YouTube.CommentThreads.List request = youtubeService.commentThreads()
-                .list("snippet,replies");
-        CommentThreadListResponse response = request.setKey(DEVELOPER_KEY)
-                .setVideoId(videoId)
-                .setMaxResults(2L)
-                .execute();
-
-        System.out.println(response);
-        response.getItems().forEach(item -> {
-            lastCommentTime = item.getSnippet().getTopLevelComment().getSnippet().getUpdatedAt();
-        });
-
-        System.out.println(lastCommentTime);
-        return lastCommentTime;
-    }
+//    public CommentThreadListResponse getComments(String videoId) throws GeneralSecurityException, IOException {
+//        YouTube youtubeService = getService();
+//
+//        // Define and execute the API request
+//        YouTube.CommentThreads.List request = youtubeService.commentThreads()
+//                .list("snippet,replies");
+//        CommentThreadListResponse response = request.setKey(DEVELOPER_KEY)
+//                .setVideoId(videoId)
+//                .setMaxResults(2L)
+//                .execute();
+//
+//        response.getItems().forEach(item -> {
+//            lastCommentTime = item.getSnippet().getTopLevelComment().getSnippet().getUpdatedAt();
+//        });
+//
+//        return response;
+//    }
 
     /**
      * Call function to create API service object. Define and
@@ -145,8 +126,9 @@ public class MoviesServiceImpl implements MoviesService {
      * @throws GeneralSecurityException, IOException
      */
     public MovieDetails getMovieDetails(String videoId) throws GeneralSecurityException, IOException {
-        YouTube youtubeService = getService();
+        YouTube youtubeService = youTubeService.getService();
 
+        MovieDetails movieDetails = new MovieDetails();
         // Define and execute the API request
         YouTube.Videos.List request = youtubeService.videos()
                 .list("snippet");
