@@ -60,14 +60,15 @@ public class MoviesServiceImpl implements MoviesService {
         movies.setMovieName(moviesVO.getMovieName());
         movies.setTrailerUrl(moviesVO.getTrailerUrl());
 
-        String[] vId = moviesVO.getTrailerUrl().split("watch\\?v=");
-        String videoId = vId[1];
+        String[] vId = moviesVO.getTrailerUrl().split("=");
+        if (vId.length > 0) {
+            String videoId = vId[1];
+            DateTime time = commentAnalysisService.analysingComments(videoId);
+            Date date = new Date(time.getValue());
 
-        DateTime time = commentAnalysisService.analysingComments("9ItBvH5J6ss");
-        Date date = new Date(time.getValue());
-
-        movies.setLastCommentTime(date);
-        moviesRepository.save(movies);
+            movies.setLastCommentTime(date);
+            moviesRepository.save(movies);
+        }
 
         return movies;
     }
