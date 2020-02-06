@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
@@ -33,7 +34,7 @@ public class MoviesServiceImpl implements MoviesService {
     private final MoviesRepository moviesRepository;
     private final YouTubeService youTubeService;
     private final CommentAnalysisService commentAnalysisService;
-//    yyyy-MM-dd hh:mm:ss
+    //    yyyy-MM-dd hh:mm:ss
     private DateFormat utubeDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
     private static final String DEVELOPER_KEY = "AIzaSyBmOXI6Fvazn_IXX9YjjoOOptUk26zLIkU";
@@ -64,7 +65,11 @@ public class MoviesServiceImpl implements MoviesService {
         DateTime time = commentAnalysisService.analysingComments("9ItBvH5J6ss");
         String formatTime = utubeDateFormat.format(time);
 
-        movies.setLastCommentTime(formatTime);
+        try {
+            movies.setLastCommentTime(utubeDateFormat.parse(formatTime));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         moviesRepository.save(movies);
 
         return movies;
