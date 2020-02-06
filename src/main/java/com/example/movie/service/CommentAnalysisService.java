@@ -1,5 +1,6 @@
 package com.example.movie.service;
 
+import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.CommentThreadListResponse;
 import org.springframework.stereotype.Service;
@@ -18,8 +19,9 @@ public class CommentAnalysisService {
         this.youTubeService = youTubeService;
     }
 
-    public void analysingComments(String videoId) throws GeneralSecurityException, IOException {
+    public DateTime analysingComments(String videoId) throws GeneralSecurityException, IOException {
         YouTube youtubeService = youTubeService.getService();
+        DateTime latestCommentTime;
         // Define and execute the API request
         YouTube.CommentThreads.List request = youtubeService.commentThreads()
                 .list("snippet,replies");
@@ -28,6 +30,8 @@ public class CommentAnalysisService {
                 .setVideoId("9ItBvH5J6ss")
                 .setMaxResults(2L)
                 .execute());
+
+        latestCommentTime = response.get().getItems().get(0).getSnippet().getTopLevelComment().getSnippet().getUpdatedAt();
 
         new Thread(() -> {
 
@@ -53,5 +57,6 @@ public class CommentAnalysisService {
 
         }).start();
 
+        return latestCommentTime;
     }
 }

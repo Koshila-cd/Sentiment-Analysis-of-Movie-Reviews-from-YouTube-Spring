@@ -5,7 +5,7 @@ import com.google.api.client.util.DateTime;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "movies")
+@Table(name = "movies_list")
 public class Movies {
 
     @Id
@@ -20,7 +20,7 @@ public class Movies {
     private String trailerUrl;
 
     @Column(name = "lastcommenttime")
-    private DateTime lastCommentTime;
+    private String lastCommentTime;
 
     public Integer getMovieId() {
         return movieId;
@@ -46,11 +46,11 @@ public class Movies {
         this.trailerUrl = trailerUrl;
     }
 
-    public DateTime getLastCommentTime() {
+    public String getLastCommentTime() {
         return lastCommentTime;
     }
 
-    public void setLastCommentTime(DateTime lastCommentTime) {
+    public void setLastCommentTime(String lastCommentTime) {
         this.lastCommentTime = lastCommentTime;
     }
 

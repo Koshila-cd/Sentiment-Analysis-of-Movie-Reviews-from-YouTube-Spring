@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Optional;
 
 @Service
@@ -31,10 +33,11 @@ public class MoviesServiceImpl implements MoviesService {
     private final MoviesRepository moviesRepository;
     private final YouTubeService youTubeService;
     private final CommentAnalysisService commentAnalysisService;
+//    yyyy-MM-dd hh:mm:ss
+    private DateFormat utubeDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
     private static final String DEVELOPER_KEY = "AIzaSyBmOXI6Fvazn_IXX9YjjoOOptUk26zLIkU";
     private DateTime lastCommentTime;
-//    private MovieDetails movieDetails = new MovieDetails();
 
     public MoviesServiceImpl(MoviesRepository moviesRepository, YouTubeService youTubeService, CommentAnalysisService commentAnalysisService) {
         this.moviesRepository = moviesRepository;
@@ -58,10 +61,11 @@ public class MoviesServiceImpl implements MoviesService {
         String[] vId = moviesVO.getTrailerUrl().split("watch\\?v=");
         String videoId = vId[1];
 
-        commentAnalysisService.analysingComments("9ItBvH5J6ss");
+        DateTime time = commentAnalysisService.analysingComments("9ItBvH5J6ss");
+        String formatTime = utubeDateFormat.format(time);
 
-//        movies.setLastCommentTime(time);
-//        moviesRepository.save(movies);
+        movies.setLastCommentTime(formatTime);
+        moviesRepository.save(movies);
 
         return movies;
     }
@@ -75,6 +79,7 @@ public class MoviesServiceImpl implements MoviesService {
     public Iterable<Movies> getAllMovies() {
 
         Iterable<Movies> movies = this.moviesRepository.findAll();
+        System.out.println(movies);
 
         return movies;
     }
@@ -94,35 +99,10 @@ public class MoviesServiceImpl implements MoviesService {
     }
 
 
-
     /**
      * Call function to create API service object. Define and
      * execute API request. Print API response.
-     *moviesRepository.save(movies);
-     * @throws GeneralSecurityException, IOException
-     */
-//    public CommentThreadListResponse getComments(String videoId) throws GeneralSecurityException, IOException {
-//        YouTube youtubeService = getService();
-//
-//        // Define and execute the API request
-//        YouTube.CommentThreads.List request = youtubeService.commentThreads()
-//                .list("snippet,replies");
-//        CommentThreadListResponse response = request.setKey(DEVELOPER_KEY)
-//                .setVideoId(videoId)
-//                .setMaxResults(2L)
-//                .execute();
-//
-//        response.getItems().forEach(item -> {
-//            lastCommentTime = item.getSnippet().getTopLevelComment().getSnippet().getUpdatedAt();
-//        });
-//
-//        return response;
-//    }
-
-    /**
-     * Call function to create API service object. Define and
-     * execute API request. Print API response.
-     *moviesRepository.save(movies);
+     *
      * @throws GeneralSecurityException, IOException
      */
     public MovieDetails getMovieDetails(String videoId) throws GeneralSecurityException, IOException {

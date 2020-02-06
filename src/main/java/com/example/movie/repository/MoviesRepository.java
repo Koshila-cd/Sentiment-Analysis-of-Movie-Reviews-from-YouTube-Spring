@@ -13,7 +13,22 @@
 package com.example.movie.repository;
 
 import com.example.movie.entity.Movies;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
+
 public interface MoviesRepository extends CrudRepository<Movies, Integer> {
+
+    /**
+     * find all datasets which matches the shared value (using JPQL) NativeQuery type was used due to
+     * the complex scoring algorithm used for sorting.
+     *
+     * @return Page<Movies>
+     */
+    @Query(value = "SELECT * "
+            + " FROM movies_list m ",
+            nativeQuery = true)
+    List<Movies> findAllMovies();
+
 }
