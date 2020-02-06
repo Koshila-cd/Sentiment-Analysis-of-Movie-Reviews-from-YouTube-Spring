@@ -37,20 +37,22 @@ public class CommentAnalysisService {
 
             try {
                 String nextPageToken;
-                do {
-                    response.get().getItems().forEach(item -> {
-                        System.out.println(item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay());
-                    });
+//                do {
 
-                    nextPageToken = response.get().getNextPageToken();
+                response.get().getItems().forEach(item -> {
+                    System.out.println(item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay());
+                });
 
-                    response.set(request.setKey(DEVELOPER_KEY)
-                            .setVideoId("9ItBvH5J6ss")
-                            .setMaxResults(2L)
-                            .setPageToken(nextPageToken)
-                            .execute());
-                    Thread.sleep(1000);
-                } while (nextPageToken != null);
+                nextPageToken = response.get().getNextPageToken();
+
+                response.set(request.setKey(DEVELOPER_KEY)
+                        .setVideoId("9ItBvH5J6ss")
+                        .setMaxResults(100L)
+                        .setPageToken(nextPageToken)
+                        .execute());
+                Thread.sleep(1000);
+
+//                } while (nextPageToken != null);
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
