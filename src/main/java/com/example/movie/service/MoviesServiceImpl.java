@@ -26,6 +26,7 @@ import java.security.GeneralSecurityException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -63,13 +64,9 @@ public class MoviesServiceImpl implements MoviesService {
         String videoId = vId[1];
 
         DateTime time = commentAnalysisService.analysingComments("9ItBvH5J6ss");
-        String formatTime = utubeDateFormat.format(time);
+        Date date = new Date(time.getValue());
 
-        try {
-            movies.setLastCommentTime(utubeDateFormat.parse(formatTime));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        movies.setLastCommentTime(date);
         moviesRepository.save(movies);
 
         return movies;
