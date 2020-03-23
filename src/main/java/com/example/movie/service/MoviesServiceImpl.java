@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
@@ -38,7 +37,7 @@ public class MoviesServiceImpl implements MoviesService {
     //    yyyy-MM-dd hh:mm:ss
     private DateFormat utubeDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
-    private static final String DEVELOPER_KEY = "AIzaSyBmOXI6Fvazn_IXX9YjjoOOptUk26zLIkU";
+    private static final String DEVELOPER_KEY = "AIzaSyCntQXAorm69Yw5VKaAFUIOBwFOD6GQhig";
     private DateTime lastCommentTime;
 
     public MoviesServiceImpl(MoviesRepository moviesRepository, YouTubeService youTubeService, CommentAnalysisService commentAnalysisService) {
@@ -102,30 +101,12 @@ public class MoviesServiceImpl implements MoviesService {
     }
 
 
-    /**
-     * Call function to create API service object. Define and
-     * execute API request. Print API response.
-     *
-     * @throws GeneralSecurityException, IOException
-     */
-    public MovieDetails getMovieDetails(String videoId) throws GeneralSecurityException, IOException {
-        YouTube youtubeService = youTubeService.getService();
 
-        MovieDetails movieDetails = new MovieDetails();
-        // Define and execute the API request
-        YouTube.Videos.List request = youtubeService.videos()
-                .list("snippet");
-        VideoListResponse response = request.setKey(DEVELOPER_KEY)
-                .setId(videoId).execute();
 
-        response.getItems().forEach(item -> {
-            movieDetails.setTitle(item.getSnippet().getTitle());
-            movieDetails.setDescription(item.getSnippet().getDescription());
-            movieDetails.setThumbnail(item.getSnippet().getThumbnails().getStandard());
-        });
+    @Override
+    public String getFromPython(String sentiment) {
 
-        return movieDetails;
-
+        return sentiment;
     }
 
 }

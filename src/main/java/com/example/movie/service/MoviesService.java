@@ -15,6 +15,7 @@ package com.example.movie.service;
 import com.example.movie.entity.Movies;
 import com.example.movie.entity.MoviesVO;
 import org.json.simple.parser.ParseException;
+import org.python.antlr.ast.Str;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -33,4 +34,6 @@ public interface MoviesService {
     public Iterable<Movies> getAllMovies();
 
     public Optional<Movies> getMovie(final Integer id) throws GeneralSecurityException, IOException, ParseException;
+
+    public String getFromPython(String sentiment);
 }

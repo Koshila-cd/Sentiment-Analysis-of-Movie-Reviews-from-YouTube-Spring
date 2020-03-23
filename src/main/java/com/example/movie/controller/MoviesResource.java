@@ -17,14 +17,17 @@ import com.example.movie.entity.MoviesVO;
 import com.example.movie.repository.MoviesRepository;
 import com.example.movie.service.CommentAnalysisService;
 import com.example.movie.service.MoviesService;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.Optional;
 
@@ -36,6 +39,10 @@ public class MoviesResource {
     private MoviesRepository moviesRepository;
 
     private final MoviesService moviesService;
+
+    @Autowired
+    @Qualifier("nonSecureRestTemplate")
+    private RestTemplate restTemplate;
 
     public MoviesResource(MoviesService moviesService) {
         this.moviesService = moviesService;
@@ -78,5 +85,28 @@ public class MoviesResource {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+
+
+    @GetMapping(path = "/py")
+    public @ResponseBody
+    String getFromPython() {
+
+        HttpHeaders headers = new HttpHeaders();
+        MediaType mediaType = new MediaType("application", "json", StandardCharsets.UTF_8);
+        headers.setContentType(mediaType);
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                "http://127.0.0.1:5000/sentiment",
+                HttpMethod.GET, entity, String.class);
+
+
+        String sentiment = this.moviesService.getFromPython(response.getBody());
+
+        return sentiment;
+
     }
 }
