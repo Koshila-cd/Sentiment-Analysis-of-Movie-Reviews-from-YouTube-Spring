@@ -14,11 +14,15 @@ package com.example.movie.controller;
 
 import com.example.movie.entity.Movies;
 import com.example.movie.entity.MoviesVO;
+import com.example.movie.entity.PythonVO;
 import com.example.movie.repository.MoviesRepository;
 import com.example.movie.service.CommentAnalysisService;
 import com.example.movie.service.MoviesService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.parser.ParseException;
+import org.python.core.Py;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.*;
@@ -29,6 +33,8 @@ import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -89,24 +95,53 @@ public class MoviesResource {
 
 
 
-    @GetMapping(path = "/py")
+//    @GetMapping(path = "/py")
+//    public @ResponseBody
+//    String getFromPython() {
+//
+//        HttpHeaders headers = new HttpHeaders();
+//        MediaType mediaType = new MediaType("application", "json", StandardCharsets.UTF_8);
+//        headers.setContentType(mediaType);
+//
+//        HttpEntity<String> entity = new HttpEntity<>(headers);
+//
+//        ResponseEntity<String> response = restTemplate.exchange(
+//                "http://127.0.0.1:5000/sentiment",
+//                HttpMethod.GET, entity, String.class);
+//
+//
+//        String sentiment = this.moviesService.getFromPython(response.getBody());
+//
+//        return sentiment;
+//
+//    }
+
+    @PostMapping(path = "/py")
     public @ResponseBody
-    String getFromPython() {
-
+    String getFromPython(@RequestBody PythonVO pythonVO) {
         HttpHeaders headers = new HttpHeaders();
-        MediaType mediaType = new MediaType("application", "json", StandardCharsets.UTF_8);
-        headers.setContentType(mediaType);
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+//        Map<String, String> fieldMap = new HashMap<>();
+//        fieldMap.put("comment", "Test comment");
+//        fieldMap.put("description", "Description Text is here");
+
+        StringBuilder json = new StringBuilder();
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            json.append(mapper.writeValueAsString(pythonVO));
+        } catch (JsonProcessingException e) {
+
+        }
 
         ResponseEntity<String> response = restTemplate.exchange(
-                "http://127.0.0.1:5000/sentiment",
-                HttpMethod.GET, entity, String.class);
+                "http://127.0.0.1:5000/data",
+                HttpMethod.POST, new HttpEntity<>(json.toString(), headers), String.class);
 
 
         String sentiment = this.moviesService.getFromPython(response.getBody());
 
         return sentiment;
-
     }
 }
