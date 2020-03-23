@@ -17,7 +17,8 @@ public class CommentAnalysisService {
 
     private static final String DEVELOPER_KEY = "AIzaSyCntQXAorm69Yw5VKaAFUIOBwFOD6GQhig";
     //    private final MoviesServiceImpl moviesService;
-    PythonVO pythonVO;
+//    PythonVO pythonVO;
+    private int noOfComments;
 
     @Autowired
     private PythonService pythonService;
@@ -30,7 +31,8 @@ public class CommentAnalysisService {
         DateTime latestCommentTime;
 
         String description = youTubeService.getMovieDetails(videoId).getDescription();
-        pythonVO.setDescription(description);
+
+//        pythonVO.setDescription(description);
         // Define and execute the API request
         YouTube.CommentThreads.List request = youtubeService.commentThreads()
                 .list("snippet,replies");
@@ -41,19 +43,17 @@ public class CommentAnalysisService {
                 .execute());
 
         latestCommentTime = response.get().getItems().get(0).getSnippet().getTopLevelComment().getSnippet().getUpdatedAt();
-
         new Thread(() -> {
 
             try {
                 String nextPageToken;
 //                do {
-
                 response.get().getItems().forEach(item -> {
-                    System.out.println(item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay());
-                    pythonVO.setComment(item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay());
+                    String comment = item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay();
+//                    pythonVO.setComment(item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay());
 
-                    final String analyse = pythonService.analyse("COMMNET IS HERE", "DESCRIP");
-                    // Set the POST to python
+                    final String sentiment = pythonService.analyse(comment, description);
+
                 });
 
                 nextPageToken = response.get().getNextPageToken();
