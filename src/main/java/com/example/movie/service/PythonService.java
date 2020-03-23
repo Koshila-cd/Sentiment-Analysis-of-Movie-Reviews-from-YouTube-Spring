@@ -13,8 +13,6 @@ import java.util.Map;
 
 @Service
 public class PythonService {
-    @Autowired
-    private MoviesService moviesService;
 
     @Autowired
     @Qualifier("nonSecureRestTemplate")
@@ -42,7 +40,7 @@ public class PythonService {
                 HttpMethod.POST, new HttpEntity<>(json.toString(), headers), String.class);
 
 
-        return this.moviesService.getFromPython(response.getBody());
+        return response.getBody();
     }
 
 }

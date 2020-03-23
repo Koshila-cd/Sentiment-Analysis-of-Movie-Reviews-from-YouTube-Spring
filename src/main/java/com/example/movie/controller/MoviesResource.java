@@ -43,16 +43,10 @@ import java.util.Optional;
 public class MoviesResource {
 
     @Autowired
-    private MoviesRepository moviesRepository;
-
-    private final MoviesService moviesService;
+    private MoviesService moviesService;
 
     @Autowired
     private PythonService pythonService;
-
-    public MoviesResource(MoviesService moviesService) {
-        this.moviesService = moviesService;
-    }
 
     @PostMapping(path = "/add")
     public @ResponseBody

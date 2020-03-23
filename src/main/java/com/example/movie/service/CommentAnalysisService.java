@@ -16,17 +16,14 @@ import java.util.concurrent.atomic.AtomicReference;
 public class CommentAnalysisService {
 
     private static final String DEVELOPER_KEY = "AIzaSyCntQXAorm69Yw5VKaAFUIOBwFOD6GQhig";
-    private final YouTubeService youTubeService;
     //    private final MoviesServiceImpl moviesService;
     PythonVO pythonVO;
 
     @Autowired
     private PythonService pythonService;
 
-    public CommentAnalysisService(YouTubeService youTubeService) {
-        this.youTubeService = youTubeService;
-//        this.moviesService = moviesService;
-    }
+    @Autowired
+    private YouTubeService youTubeService;
 
     public DateTime analysingComments(String videoId) throws GeneralSecurityException, IOException {
         YouTube youtubeService = youTubeService.getService();
@@ -55,7 +52,7 @@ public class CommentAnalysisService {
                     System.out.println(item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay());
                     pythonVO.setComment(item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay());
 
-                    String analyse = pythonService.analyse("COMMNET IS HERE", "DESCRIP");
+                    final String analyse = pythonService.analyse("COMMNET IS HERE", "DESCRIP");
                     // Set the POST to python
                 });
 
