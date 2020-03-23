@@ -18,6 +18,7 @@ import com.example.movie.entity.PythonVO;
 import com.example.movie.repository.MoviesRepository;
 import com.example.movie.service.CommentAnalysisService;
 import com.example.movie.service.MoviesService;
+import com.example.movie.service.PythonService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,8 +48,7 @@ public class MoviesResource {
     private final MoviesService moviesService;
 
     @Autowired
-    @Qualifier("nonSecureRestTemplate")
-    private RestTemplate restTemplate;
+    private PythonService pythonService;
 
     public MoviesResource(MoviesService moviesService) {
         this.moviesService = moviesService;
@@ -83,7 +83,7 @@ public class MoviesResource {
     private CommentAnalysisService commentAnalysisService;
 
     @GetMapping("analysingComments/{id}")
-    public void analysingComments(@PathVariable("id") String id){
+    public void analysingComments(@PathVariable("id") String id) {
         try {
             commentAnalysisService.analysingComments(id);
         } catch (GeneralSecurityException e) {
@@ -92,7 +92,6 @@ public class MoviesResource {
             e.printStackTrace();
         }
     }
-
 
 
 //    @GetMapping(path = "/py")
@@ -119,29 +118,6 @@ public class MoviesResource {
     @PostMapping(path = "/py")
     public @ResponseBody
     String getFromPython(@RequestBody PythonVO pythonVO) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-//        Map<String, String> fieldMap = new HashMap<>();
-//        fieldMap.put("comment", "Test comment");
-//        fieldMap.put("description", "Description Text is here");
-
-        StringBuilder json = new StringBuilder();
-
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            json.append(mapper.writeValueAsString(pythonVO));
-        } catch (JsonProcessingException e) {
-
-        }
-
-        ResponseEntity<String> response = restTemplate.exchange(
-                "http://127.0.0.1:5000/data",
-                HttpMethod.POST, new HttpEntity<>(json.toString(), headers), String.class);
-
-
-        String sentiment = this.moviesService.getFromPython(response.getBody());
-
-        return sentiment;
+        return pythonService.analyse(pythonVO.getComment(), pythonVO.getDescription());
     }
 }

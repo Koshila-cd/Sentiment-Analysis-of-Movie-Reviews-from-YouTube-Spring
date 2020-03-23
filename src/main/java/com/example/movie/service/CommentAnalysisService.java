@@ -5,6 +5,7 @@ import com.example.movie.entity.PythonVO;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.CommentThreadListResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -16,8 +17,11 @@ public class CommentAnalysisService {
 
     private static final String DEVELOPER_KEY = "AIzaSyCntQXAorm69Yw5VKaAFUIOBwFOD6GQhig";
     private final YouTubeService youTubeService;
-//    private final MoviesServiceImpl moviesService;
+    //    private final MoviesServiceImpl moviesService;
     PythonVO pythonVO;
+
+    @Autowired
+    private PythonService pythonService;
 
     public CommentAnalysisService(YouTubeService youTubeService) {
         this.youTubeService = youTubeService;
@@ -50,6 +54,8 @@ public class CommentAnalysisService {
                 response.get().getItems().forEach(item -> {
                     System.out.println(item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay());
                     pythonVO.setComment(item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay());
+
+                    String analyse = pythonService.analyse("COMMNET IS HERE", "DESCRIP");
                     // Set the POST to python
                 });
 
