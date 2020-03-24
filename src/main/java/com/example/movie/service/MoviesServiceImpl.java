@@ -12,20 +12,16 @@
 
 package com.example.movie.service;
 
-import com.example.movie.entity.MovieDetails;
 import com.example.movie.entity.Movies;
 import com.example.movie.entity.MoviesVO;
 import com.example.movie.repository.MoviesRepository;
 import com.google.api.client.util.DateTime;
-import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.model.VideoListResponse;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -37,7 +33,7 @@ public class MoviesServiceImpl implements MoviesService {
     //    yyyy-MM-dd hh:mm:ss
     private DateFormat utubeDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
-    private static final String DEVELOPER_KEY = "AIzaSyCntQXAorm69Yw5VKaAFUIOBwFOD6GQhig";
+//    private static final String DEVELOPER_KEY = "AIzaSyBERRsW1tvyhIFH4FaTbzwF5BETUq0ojpQ";
     private DateTime lastCommentTime;
 
     public MoviesServiceImpl(MoviesRepository moviesRepository, YouTubeService youTubeService, CommentAnalysisService commentAnalysisService) {
@@ -62,10 +58,15 @@ public class MoviesServiceImpl implements MoviesService {
         String[] vId = moviesVO.getTrailerUrl().split("=");
         if (vId.length > 0) {
             String videoId = vId[1];
-            DateTime time = commentAnalysisService.analysingComments(videoId);
-            Date date = new Date(time.getValue());
-
-            movies.setLastCommentTime(date);
+            Movies movies1 = commentAnalysisService.analysingComments(videoId);
+//            Date date = new Date(time.getValue());
+            movies.setLastCommentTime(movies1.getLastCommentTime());
+            System.out.println("rateee");
+            System.out.println(movies1.getRate());
+            movies.setThumbnail(movies1.getThumbnail());
+            movies.setRate(movies1.getRate());
+//                movies.set
+//            movies.setLastCommentTime(date);
             moviesRepository.save(movies);
         }
 
@@ -99,8 +100,6 @@ public class MoviesServiceImpl implements MoviesService {
 
         return movie;
     }
-
-
 
 
     @Override

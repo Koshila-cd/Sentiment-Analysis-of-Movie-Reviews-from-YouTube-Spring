@@ -1,7 +1,6 @@
 package com.example.movie.service;
 
-import com.example.movie.entity.MovieDetails;
-import com.example.movie.entity.PythonVO;
+import com.example.movie.entity.Movies;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.CommentThreadListResponse;
@@ -10,15 +9,19 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class CommentAnalysisService {
 
-    private static final String DEVELOPER_KEY = "AIzaSyCntQXAorm69Yw5VKaAFUIOBwFOD6GQhig";
+    private static final String DEVELOPER_KEY = "AIzaSyBERRsW1tvyhIFH4FaTbzwF5BETUq0ojpQ";
     //    private final MoviesServiceImpl moviesService;
 //    PythonVO pythonVO;
-    private int noOfComments;
+    private int noOfComments = 0;
+    private int positive = 0;
+    private int negative = 0;
+    private Double rate = 0.0;
 
     @Autowired
     private PythonService pythonService;
@@ -26,12 +29,15 @@ public class CommentAnalysisService {
     @Autowired
     private YouTubeService youTubeService;
 
-    public DateTime analysingComments(String videoId) throws GeneralSecurityException, IOException {
+    public Movies analysingComments(String videoId) throws GeneralSecurityException, IOException {
         YouTube youtubeService = youTubeService.getService();
         DateTime latestCommentTime;
 
+        Movies movies = new Movies();
         String description = youTubeService.getMovieDetails(videoId).getDescription();
-
+        movies.setThumbnail(youTubeService.getMovieDetails(videoId).getThumbnail());
+        System.out.println("description");
+        System.out.println(description);
 //        pythonVO.setDescription(description);
         // Define and execute the API request
         YouTube.CommentThreads.List request = youtubeService.commentThreads()
@@ -53,6 +59,18 @@ public class CommentAnalysisService {
 //                    pythonVO.setComment(item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay());
 
                     final String sentiment = pythonService.analyse(comment, description);
+                    noOfComments += 1;
+                    if (sentiment.equals("p")) {
+                        positive += 1;
+                    }
+//                    else if (sentiment.equals("n")) {
+//                        negative += 1;
+//                    }
+//                    if (noOfComments > 0) {
+                        rate = (double)positive/noOfComments;
+                        movies.setRate(rate);
+//                    }
+
 
                 });
 
@@ -72,6 +90,10 @@ public class CommentAnalysisService {
 
         }).start();
 
-        return latestCommentTime;
+        DateTime time = latestCommentTime;
+        Date date = new Date(time.getValue());
+        movies.setLastCommentTime(date);
+
+        return movies;
     }
 }

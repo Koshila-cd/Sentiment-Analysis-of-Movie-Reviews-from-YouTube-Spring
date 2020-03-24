@@ -8,7 +8,7 @@ public class MovieDetails {
 
     private String description;
 
-    private Thumbnail thumbnail;
+    private String thumbnail;
 
     public String getTitle() {
         return title;
@@ -26,11 +26,11 @@ public class MovieDetails {
         this.description = description;
     }
 
-    public Thumbnail getThumbnail() {
+    public String getThumbnail() {
         return thumbnail;
     }
 
-    public void setThumbnail(Thumbnail thumbnail) {
+    public void setThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
     }
 

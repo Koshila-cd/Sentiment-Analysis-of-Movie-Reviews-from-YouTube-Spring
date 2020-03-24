@@ -17,7 +17,7 @@ public class YouTubeService {
 
     private static final String APPLICATION_NAME = "API code samples";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    private static final String DEVELOPER_KEY = "AIzaSyCntQXAorm69Yw5VKaAFUIOBwFOD6GQhig";
+    private static final String DEVELOPER_KEY = "AIzaSyBERRsW1tvyhIFH4FaTbzwF5BETUq0ojpQ";
 
     /**
      * Build and return an authorized API client service.
@@ -51,7 +51,7 @@ public class YouTubeService {
         response.getItems().forEach(item -> {
             movieDetails.setTitle(item.getSnippet().getTitle());
             movieDetails.setDescription(item.getSnippet().getDescription());
-            movieDetails.setThumbnail(item.getSnippet().getThumbnails().getStandard());
+            movieDetails.setThumbnail(item.getSnippet().getThumbnails().getStandard().getUrl());
         });
 
         return movieDetails;

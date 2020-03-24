@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@CrossOrigin
 @Controller
 @RequestMapping(path = "/movies")
 public class MoviesResource {
@@ -52,6 +53,7 @@ public class MoviesResource {
     public @ResponseBody
     ResponseEntity<Movies> addNewMovie(@RequestBody MoviesVO moviesVO) throws GeneralSecurityException, IOException, ParseException {
 
+        System.out.println(moviesVO);
         Movies movieAdded = this.moviesService.addNewMovie(moviesVO);
 
         return new ResponseEntity<>(movieAdded, HttpStatus.CREATED);
@@ -62,6 +64,8 @@ public class MoviesResource {
     Iterable<Movies> getAllMovies() {
 
         Iterable<Movies> movies = this.moviesService.getAllMovies();
+        System.out.println("dddddd");
+        System.out.println(movies);
         return movies;
     }
 
