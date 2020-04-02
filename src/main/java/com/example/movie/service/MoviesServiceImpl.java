@@ -15,14 +15,11 @@ package com.example.movie.service;
 import com.example.movie.entity.Movies;
 import com.example.movie.entity.MoviesVO;
 import com.example.movie.repository.MoviesRepository;
-import com.google.api.client.util.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Optional;
 
 @Service
@@ -36,17 +33,6 @@ public class MoviesServiceImpl implements MoviesService {
 
     @Autowired
     private CommentAnalysisService commentAnalysisService;
-    //    yyyy-MM-dd hh:mm:ss
-    private DateFormat utubeDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-
-//    private static final String DEVELOPER_KEY = "AIzaSyBERRsW1tvyhIFH4FaTbzwF5BETUq0ojpQ";
-    private DateTime lastCommentTime;
-
-//    public MoviesServiceImpl(MoviesRepository moviesRepository, YouTubeService youTubeService, CommentAnalysisService commentAnalysisService) {
-//        this.moviesRepository = moviesRepository;
-//        this.youTubeService = youTubeService;
-//        this.commentAnalysisService = commentAnalysisService;
-//    }
 
     /**
      * Add new movie to the database with the trailer URL
@@ -65,13 +51,10 @@ public class MoviesServiceImpl implements MoviesService {
         if (vId.length > 0) {
             String videoId = vId[1];
             Movies movies1 = commentAnalysisService.analysingComments(videoId, movies);
-//            Date date = new Date(time.getValue());
             movies.setLastCommentTime(movies1.getLastCommentTime());
-
             movies.setThumbnail(youTubeService.getMovieDetails(videoId).getThumbnail());
             movies.setRate(movies1.getRate());
-//                movies.set
-//            movies.setLastCommentTime(date);
+
             moviesRepository.save(movies);
         }
 

@@ -1,7 +1,6 @@
 package com.example.movie.service;
 
 import com.example.movie.entity.Movies;
-import com.example.movie.scheduler.CommentRetrieveScheduler;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.CommentThread;
