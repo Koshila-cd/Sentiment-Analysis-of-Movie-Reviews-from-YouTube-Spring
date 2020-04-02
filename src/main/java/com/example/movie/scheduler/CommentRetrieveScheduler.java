@@ -33,7 +33,7 @@ public class CommentRetrieveScheduler {
     @Autowired
     private CommentAnalysisService commentAnalysisService;
 
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 60000)
     public void getCommentScheduler() {
         log.info("comment scheduler started...");
         Iterable<Movies> allMovies = moviesService.getAllMovies();
@@ -43,6 +43,8 @@ public class CommentRetrieveScheduler {
             movies.stream().forEach(movie -> {
                 try {
                     commentAnalysisService.analysingComments(movie.getTrailerUrl().split("=")[1], movie);
+
+                    moviesService.updateMovie(movie);
                 } catch (GeneralSecurityException e) {
                     e.printStackTrace();
                 } catch (IOException e) {

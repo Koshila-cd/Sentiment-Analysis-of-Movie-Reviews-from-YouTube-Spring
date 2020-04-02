@@ -4,6 +4,7 @@ import com.example.movie.entity.Movies;
 import com.example.movie.scheduler.CommentRetrieveScheduler;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.CommentThread;
 import com.google.api.services.youtube.model.CommentThreadListResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import java.security.GeneralSecurityException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -46,9 +48,7 @@ public class CommentAnalysisService {
 
     public Movies analysingComments(String videoId, Movies movie) throws GeneralSecurityException, IOException {
         YouTube youtubeService = youTubeService.getService();
-        Date latestCommentTime = null;
-
-        Movies movies = new Movies();
+        Movies movies = movie;
         String description = youTubeService.getMovieDetails(videoId).getDescription();
 
         // Define and execute the API request
@@ -62,36 +62,38 @@ public class CommentAnalysisService {
 
         log.info("youtube response size {}", response.get().getItems().size());
 
-//        response.get().get()
+        Date latestCommentTime = null;
+
 //        new Thread(() -> {
 
 //            try {
-                String nextPageToken;
-                AtomicBoolean completed = new AtomicBoolean(false);
-                AtomicInteger positive = new AtomicInteger();
+        String nextPageToken;
+        AtomicBoolean completed = new AtomicBoolean(false);
+        AtomicInteger positive = new AtomicInteger();
 
 //                do {
-                response.get().getItems()
-                        .stream()
-                        .forEach(item -> {
+        response.get().getItems()
+                .stream()
+                .forEach(item -> {
 
-                            DateTime time = item.getSnippet().getTopLevelComment().getSnippet().getUpdatedAt();
-                            Date commentTime = new Date(time.getValue());
+                    DateTime time = item.getSnippet().getTopLevelComment().getSnippet().getUpdatedAt();
+                    Date commentTime = new Date(time.getValue());
 
-                            log.info("last time: {}, new comment time: {}", lastTimeFormat.format(movie.getLastCommentTime()), lastTimeFormat.format(commentTime));
-                            if(movie.getLastCommentTime().before(commentTime)) {
-                                String comment = item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay();
-                                log.info("comment: {}",comment);
-                                final String sentiment = pythonService.analyse(comment, description);
-                                if("p".equals(sentiment)){
-                                    positive.getAndIncrement();
-                                }
-                            }else{
-                                completed.set(true);
-                                return;
-                            }
+                    log.info("last time: {}, new comment time: {}", lastTimeFormat.format(movie.getLastCommentTime()), lastTimeFormat.format(commentTime));
+                    if (movie.getLastCommentTime().before(commentTime)) {
+                        String comment = item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay();
+                        log.info("============================================");
+                        log.info("new comment: {}", comment);
+                        final String sentiment = pythonService.analyse(comment, description);
+                        if ("p".equals(sentiment)) {
+                            positive.getAndIncrement();
+                        }
+                    } else {
+                        completed.set(true);
+                        return;
+                    }
 
-                        });
+                });
 
 //                nextPageToken = response.get().getNextPageToken();
 //
@@ -100,6 +102,12 @@ public class CommentAnalysisService {
 //                        .setMaxResults(10L)
 //                        .setPageToken(nextPageToken)
 //                        .execute());
+
+        List<CommentThread> items = response.get().getItems();
+        if (items.size() > 0) {
+            latestCommentTime = new Date(items.get(0).getSnippet().getTopLevelComment().getSnippet().getUpdatedAt().getValue());
+        }
+
 //                Thread.sleep(1000);
 
 //                } while (nextPageToken != null);
@@ -109,7 +117,8 @@ public class CommentAnalysisService {
 
 //        }).start();
 
-        if(latestCommentTime != null) movies.setLastCommentTime(latestCommentTime.get());
+        log.info("latest and next comment date: {}", latestCommentTime);
+        if (latestCommentTime != null) movies.setLastCommentTime(latestCommentTime);
         return movies;
     }
 }

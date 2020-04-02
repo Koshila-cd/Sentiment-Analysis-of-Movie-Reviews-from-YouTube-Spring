@@ -36,4 +36,6 @@ public interface MoviesService {
     public Optional<Movies> getMovie(final Integer id) throws GeneralSecurityException, IOException, ParseException;
 
     public String getFromPython(String sentiment);
+
+    void updateMovie(Movies movie);
 }

@@ -110,4 +110,9 @@ public class MoviesServiceImpl implements MoviesService {
         return sentiment;
     }
 
+    @Override
+    public void updateMovie(Movies movie) {
+        moviesRepository.save(movie);
+    }
+
 }
