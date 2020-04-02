@@ -1,23 +1,33 @@
 package com.example.movie.service;
 
 import com.example.movie.entity.Movies;
+import com.example.movie.scheduler.CommentRetrieveScheduler;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.CommentThreadListResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class CommentAnalysisService {
 
-    private static final String DEVELOPER_KEY = "AIzaSyBERRsW1tvyhIFH4FaTbzwF5BETUq0ojpQ";
-    //    private final MoviesServiceImpl moviesService;
-//    PythonVO pythonVO;
+    private final Logger log = LoggerFactory.getLogger(CommentAnalysisService.class);
+
+    @Value(value = "${youtube.api.key}")
+    private String developerKey;
+
     private int noOfComments = 0;
     private int positive = 0;
     private int negative = 0;
@@ -29,71 +39,77 @@ public class CommentAnalysisService {
     @Autowired
     private YouTubeService youTubeService;
 
-    public Movies analysingComments(String videoId) throws GeneralSecurityException, IOException {
+    @Autowired
+    private MoviesService moviesService;
+
+    private DateFormat lastTimeFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+
+    public Movies analysingComments(String videoId, Movies movie) throws GeneralSecurityException, IOException {
         YouTube youtubeService = youTubeService.getService();
-        DateTime latestCommentTime;
+        Date latestCommentTime = null;
 
         Movies movies = new Movies();
         String description = youTubeService.getMovieDetails(videoId).getDescription();
-        movies.setThumbnail(youTubeService.getMovieDetails(videoId).getThumbnail());
-        System.out.println("description");
-        System.out.println(description);
-//        pythonVO.setDescription(description);
+
         // Define and execute the API request
         YouTube.CommentThreads.List request = youtubeService.commentThreads()
                 .list("snippet,replies");
 
-        AtomicReference<CommentThreadListResponse> response = new AtomicReference<>(request.setKey(DEVELOPER_KEY)
+        AtomicReference<CommentThreadListResponse> response = new AtomicReference<>(request.setKey(developerKey)
                 .setVideoId(videoId)
                 .setMaxResults(2L)
                 .execute());
 
-        latestCommentTime = response.get().getItems().get(0).getSnippet().getTopLevelComment().getSnippet().getUpdatedAt();
-        new Thread(() -> {
+        log.info("youtube response size {}", response.get().getItems().size());
 
-            try {
+//        response.get().get()
+//        new Thread(() -> {
+
+//            try {
                 String nextPageToken;
+                AtomicBoolean completed = new AtomicBoolean(false);
+                AtomicInteger positive = new AtomicInteger();
+
 //                do {
-                response.get().getItems().forEach(item -> {
-                    String comment = item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay();
-//                    pythonVO.setComment(item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay());
+                response.get().getItems()
+                        .stream()
+                        .forEach(item -> {
 
-                    final String sentiment = pythonService.analyse(comment, description);
-                    noOfComments += 1;
-                    if (sentiment.equals("p")) {
-                        positive += 1;
-                    }
-//                    else if (sentiment.equals("n")) {
-//                        negative += 1;
-//                    }
-//                    if (noOfComments > 0) {
-                        rate = (double)positive/noOfComments;
-                        movies.setRate(rate);
-//                    }
+                            DateTime time = item.getSnippet().getTopLevelComment().getSnippet().getUpdatedAt();
+                            Date commentTime = new Date(time.getValue());
 
+                            log.info("last time: {}, new comment time: {}", lastTimeFormat.format(movie.getLastCommentTime()), lastTimeFormat.format(commentTime));
+                            if(movie.getLastCommentTime().before(commentTime)) {
+                                String comment = item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay();
+                                log.info("comment: {}",comment);
+                                final String sentiment = pythonService.analyse(comment, description);
+                                if("p".equals(sentiment)){
+                                    positive.getAndIncrement();
+                                }
+                            }else{
+                                completed.set(true);
+                                return;
+                            }
 
-                });
+                        });
 
-                nextPageToken = response.get().getNextPageToken();
-
-                response.set(request.setKey(DEVELOPER_KEY)
-                        .setVideoId(videoId)
-                        .setMaxResults(100L)
-                        .setPageToken(nextPageToken)
-                        .execute());
-                Thread.sleep(1000);
+//                nextPageToken = response.get().getNextPageToken();
+//
+//                response.set(request.setKey(developerKey)
+//                        .setVideoId(videoId)
+//                        .setMaxResults(10L)
+//                        .setPageToken(nextPageToken)
+//                        .execute());
+//                Thread.sleep(1000);
 
 //                } while (nextPageToken != null);
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
-            }
+//            } catch (IOException | InterruptedException e) {
+//                e.printStackTrace();
+//            }
 
-        }).start();
+//        }).start();
 
-        DateTime time = latestCommentTime;
-        Date date = new Date(time.getValue());
-        movies.setLastCommentTime(date);
-
+        if(latestCommentTime != null) movies.setLastCommentTime(latestCommentTime.get());
         return movies;
     }
 }

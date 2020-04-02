@@ -1,0 +1,12 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/movies
+    username: root
+    password: root
+
+youtube:
+  api:
+    key: AIzaSyDaGpDwMoZCmEKSLTEL1g6FjYOXYGxrn4Y

@@ -16,6 +16,7 @@ import com.example.movie.entity.Movies;
 import com.example.movie.entity.MoviesVO;
 import com.example.movie.repository.MoviesRepository;
 import com.google.api.client.util.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -27,20 +28,25 @@ import java.util.Optional;
 @Service
 public class MoviesServiceImpl implements MoviesService {
 
-    private final MoviesRepository moviesRepository;
-    private final YouTubeService youTubeService;
-    private final CommentAnalysisService commentAnalysisService;
+    @Autowired
+    private MoviesRepository moviesRepository;
+
+    @Autowired
+    private YouTubeService youTubeService;
+
+    @Autowired
+    private CommentAnalysisService commentAnalysisService;
     //    yyyy-MM-dd hh:mm:ss
     private DateFormat utubeDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
 //    private static final String DEVELOPER_KEY = "AIzaSyBERRsW1tvyhIFH4FaTbzwF5BETUq0ojpQ";
     private DateTime lastCommentTime;
 
-    public MoviesServiceImpl(MoviesRepository moviesRepository, YouTubeService youTubeService, CommentAnalysisService commentAnalysisService) {
-        this.moviesRepository = moviesRepository;
-        this.youTubeService = youTubeService;
-        this.commentAnalysisService = commentAnalysisService;
-    }
+//    public MoviesServiceImpl(MoviesRepository moviesRepository, YouTubeService youTubeService, CommentAnalysisService commentAnalysisService) {
+//        this.moviesRepository = moviesRepository;
+//        this.youTubeService = youTubeService;
+//        this.commentAnalysisService = commentAnalysisService;
+//    }
 
     /**
      * Add new movie to the database with the trailer URL
@@ -58,12 +64,11 @@ public class MoviesServiceImpl implements MoviesService {
         String[] vId = moviesVO.getTrailerUrl().split("=");
         if (vId.length > 0) {
             String videoId = vId[1];
-            Movies movies1 = commentAnalysisService.analysingComments(videoId);
+            Movies movies1 = commentAnalysisService.analysingComments(videoId, movies);
 //            Date date = new Date(time.getValue());
             movies.setLastCommentTime(movies1.getLastCommentTime());
-            System.out.println("rateee");
-            System.out.println(movies1.getRate());
-            movies.setThumbnail(movies1.getThumbnail());
+
+            movies.setThumbnail(youTubeService.getMovieDetails(videoId).getThumbnail());
             movies.setRate(movies1.getRate());
 //                movies.set
 //            movies.setLastCommentTime(date);
@@ -80,17 +85,14 @@ public class MoviesServiceImpl implements MoviesService {
      */
     @Override
     public Iterable<Movies> getAllMovies() {
-
         Iterable<Movies> movies = this.moviesRepository.findAll();
-        System.out.println(movies);
-
         return movies;
     }
 
     /**
      * Get the video ID in trailer URL
      *
-     * @return a Movie from Optional<Movies>
+     * @return aMovie from Optional<Movies>
      * @throws GeneralSecurityException, IOException
      */
     @Override

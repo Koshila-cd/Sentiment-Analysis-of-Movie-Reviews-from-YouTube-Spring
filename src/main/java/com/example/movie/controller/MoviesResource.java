@@ -15,27 +15,17 @@ package com.example.movie.controller;
 import com.example.movie.entity.Movies;
 import com.example.movie.entity.MoviesVO;
 import com.example.movie.entity.PythonVO;
-import com.example.movie.repository.MoviesRepository;
 import com.example.movie.service.CommentAnalysisService;
 import com.example.movie.service.MoviesService;
 import com.example.movie.service.PythonService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.parser.ParseException;
-import org.python.core.Py;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @CrossOrigin
@@ -52,27 +42,20 @@ public class MoviesResource {
     @PostMapping(path = "/add")
     public @ResponseBody
     ResponseEntity<Movies> addNewMovie(@RequestBody MoviesVO moviesVO) throws GeneralSecurityException, IOException, ParseException {
-
-        System.out.println(moviesVO);
         Movies movieAdded = this.moviesService.addNewMovie(moviesVO);
-
         return new ResponseEntity<>(movieAdded, HttpStatus.CREATED);
     }
 
     @GetMapping(path = "/all")
     public @ResponseBody
     Iterable<Movies> getAllMovies() {
-
         Iterable<Movies> movies = this.moviesService.getAllMovies();
-        System.out.println("dddddd");
-        System.out.println(movies);
         return movies;
     }
 
     @GetMapping(path = "/{id}")
     public @ResponseBody
     Optional<Movies> getMovie(@PathVariable("id") final int id) throws GeneralSecurityException, IOException, ParseException {
-
         Optional<Movies> movie = this.moviesService.getMovie(id);
         return movie;
     }
@@ -80,16 +63,16 @@ public class MoviesResource {
     @Autowired
     private CommentAnalysisService commentAnalysisService;
 
-    @GetMapping("analysingComments/{id}")
-    public void analysingComments(@PathVariable("id") String id) {
-        try {
-            commentAnalysisService.analysingComments(id);
-        } catch (GeneralSecurityException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    @GetMapping("analysingComments/{id}")
+//    public void analysingComments(@PathVariable("id") String id) {
+//        try {
+//            commentAnalysisService.analysingComments(id, movie);
+//        } catch (GeneralSecurityException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 
 //    @GetMapping(path = "/py")
