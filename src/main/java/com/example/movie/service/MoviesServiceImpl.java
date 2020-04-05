@@ -35,10 +35,7 @@ public class MoviesServiceImpl implements MoviesService {
     private CommentAnalysisService commentAnalysisService;
 
     /**
-     * Add new movie to the database with the trailer URL
-     *
-     * @param moviesVO a new Movie to be added from {@link MoviesVO}
-     * @return Movies
+     * {@inheritDoc}
      */
     @Override
     public Movies addNewMovie(MoviesVO moviesVO) throws GeneralSecurityException, IOException {
@@ -62,9 +59,7 @@ public class MoviesServiceImpl implements MoviesService {
     }
 
     /**
-     * Get all the Movies
-     *
-     * @return Movies
+     * {@inheritDoc}
      */
     @Override
     public Iterable<Movies> getAllMovies() {
@@ -73,10 +68,7 @@ public class MoviesServiceImpl implements MoviesService {
     }
 
     /**
-     * Get the video ID in trailer URL
-     *
-     * @return aMovie from Optional<Movies>
-     * @throws GeneralSecurityException, IOException
+     * {@inheritDoc}
      */
     @Override
     public Optional<Movies> getMovie(final Integer id) {
@@ -86,13 +78,18 @@ public class MoviesServiceImpl implements MoviesService {
         return movie;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getFromPython(String sentiment) {
 
         return sentiment;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateMovie(Movies movie) {
         moviesRepository.save(movie);

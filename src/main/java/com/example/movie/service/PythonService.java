@@ -1,5 +1,6 @@
 package com.example.movie.service;
 
+import com.example.movie.entity.MoviesVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,14 @@ public class PythonService {
     @Qualifier("nonSecureRestTemplate")
     private RestTemplate restTemplate;
 
+    /**
+     * Add new movie to the database with the trailer URL
+     *
+     * @param comment one comment of a movie
+     * @param description YouTube movie description
+     *
+     * @return Python response
+     */
     public String analyse(String comment, String description) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -35,6 +44,7 @@ public class PythonService {
 
         }
 
+        // call Python rest API
         ResponseEntity<String> response = restTemplate.exchange(
                 "http://127.0.0.1:5000/data",
                 HttpMethod.POST, new HttpEntity<>(json.toString(), headers), String.class);

@@ -23,18 +23,42 @@ import java.util.Optional;
 public interface MoviesService {
 
     /**
-     * add Movies.
+     * Add new movie to the database with the trailer URL
      *
      * @param moviesVO a new Movie to be added from {@link MoviesVO}
-     * @return url
+     * @return Movies
      */
     public Movies addNewMovie(MoviesVO moviesVO) throws GeneralSecurityException, IOException, ParseException;
 
+    /**
+     * Get all the Movies
+     *
+     * @return Movies
+     */
     public Iterable<Movies> getAllMovies();
 
+    /**
+     * Get the video ID in trailer URL
+     *
+     * @param id movie Id
+     * @return movie from Optional<Movies>
+     */
     public Optional<Movies> getMovie(final Integer id) throws GeneralSecurityException, IOException, ParseException;
 
+    /**
+     * Get Python response after sending comment and description
+     *
+     * @param sentiment python response of sentiment polarity
+     *
+     * @return sentiment
+     */
     public String getFromPython(String sentiment);
 
+    /**
+     * Update movie parameters in database
+     *
+     * @param movie a new Movie to be added from {@link Movies}
+     *
+     */
     void updateMovie(Movies movie);
 }

@@ -29,10 +29,8 @@ public class CommentAnalysisService {
     @Value(value = "${youtube.api.key}")
     private String developerKey;
 
-    private int noOfComments = 0;
-    private int positive = 0;
     private int negative = 0;
-    private Double rate = 0.0;
+
 
     @Autowired
     private PythonService pythonService;
@@ -44,7 +42,15 @@ public class CommentAnalysisService {
     private MoviesService moviesService;
 
     private DateFormat lastTimeFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+    AtomicInteger noOfComments = new AtomicInteger();
+    AtomicInteger positive = new AtomicInteger();
 
+    /**
+     * Add new movie to the database with the trailer URL
+     *
+     * @param videoId video Id split from the trailer URL
+     * @return Movies
+     */
     public Movies analysingComments(String videoId, Movies movie) throws GeneralSecurityException, IOException {
         YouTube youtubeService = youTubeService.getService();
         Movies movies = movie;
@@ -56,19 +62,26 @@ public class CommentAnalysisService {
 
         AtomicReference<CommentThreadListResponse> response = new AtomicReference<>(request.setKey(developerKey)
                 .setVideoId(videoId)
-                .setMaxResults(2L)
+                .setMaxResults(movie.getLastCommentTime() == null ? 10L : 3L)
                 .execute());
 
         log.info("youtube response size {}", response.get().getItems().size());
+        System.out.println("response");
+        System.out.println(response);
 
         Date latestCommentTime = null;
+        List<CommentThread> items = response.get().getItems();
+        if (items.size() > 0) {
+            latestCommentTime = new Date(items.get(0).getSnippet().getTopLevelComment().getSnippet().getUpdatedAt().getValue());
+        }
+
 
 //        new Thread(() -> {
 
 //            try {
         String nextPageToken;
         AtomicBoolean completed = new AtomicBoolean(false);
-        AtomicInteger positive = new AtomicInteger();
+
 
 //                do {
         response.get().getItems()
@@ -77,16 +90,33 @@ public class CommentAnalysisService {
 
                     DateTime time = item.getSnippet().getTopLevelComment().getSnippet().getUpdatedAt();
                     Date commentTime = new Date(time.getValue());
-
-                    log.info("last time: {}, new comment time: {}", lastTimeFormat.format(movie.getLastCommentTime()), lastTimeFormat.format(commentTime));
-                    if (movie.getLastCommentTime().before(commentTime)) {
+                    log.info("last time: {}, new comment time: {}", movie.getLastCommentTime() == null ? "NO" : lastTimeFormat.format(movie.getLastCommentTime()), lastTimeFormat.format(commentTime));
+                    if (movie.getLastCommentTime() == null || movie.getLastCommentTime().before(commentTime)) {
                         String comment = item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay();
                         log.info("============================================");
                         log.info("new comment: {}", comment);
+                        noOfComments.getAndIncrement();
                         final String sentiment = pythonService.analyse(comment, description);
+                        log.info("sentiment: {}", sentiment);
+
                         if ("p".equals(sentiment)) {
                             positive.getAndIncrement();
+                            Integer newLikes = 0;
+
+                            try {
+                                newLikes = youTubeService.getMovieDetails(videoId).getLikes();
+                            } catch (GeneralSecurityException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            if (newLikes > 0) {
+                                System.out.println("NEW LIKES!!!");
+                                System.out.println(newLikes);
+                            }
+//                            rate = positive.doubleValue()/noOfComments.doubleValue();
                         }
+
                     } else {
                         completed.set(true);
                         return;
@@ -102,10 +132,6 @@ public class CommentAnalysisService {
 //                        .setPageToken(nextPageToken)
 //                        .execute());
 
-        List<CommentThread> items = response.get().getItems();
-        if (items.size() > 0) {
-            latestCommentTime = new Date(items.get(0).getSnippet().getTopLevelComment().getSnippet().getUpdatedAt().getValue());
-        }
 
 //                Thread.sleep(1000);
 
@@ -118,6 +144,8 @@ public class CommentAnalysisService {
 
         log.info("latest and next comment date: {}", latestCommentTime);
         if (latestCommentTime != null) movies.setLastCommentTime(latestCommentTime);
+        log.info("updated positive: {}", positive);
+
         return movies;
     }
 }
