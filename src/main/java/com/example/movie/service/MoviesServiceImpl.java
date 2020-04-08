@@ -50,7 +50,7 @@ public class MoviesServiceImpl implements MoviesService {
             Movies movies1 = commentAnalysisService.analysingComments(videoId, movies);
             movies.setLastCommentTime(movies1.getLastCommentTime());
             movies.setThumbnail(youTubeService.getMovieDetails(videoId).getThumbnail());
-            movies.setRate(movies1.getRate());
+//            movies.setRate(movies1.getRate());
 
             moviesRepository.save(movies);
         }

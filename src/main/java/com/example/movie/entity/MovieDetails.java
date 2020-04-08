@@ -15,6 +15,8 @@ public class MovieDetails {
 
     private Integer likes;
 
+    private Integer dislikes;
+
     private Integer total;
 
     public String getTitle() {
@@ -49,6 +51,14 @@ public class MovieDetails {
         this.likes = likes;
     }
 
+    public Integer getDislikes() {
+        return dislikes;
+    }
+
+    public void setDislikes(Integer dislikes) {
+        this.dislikes = dislikes;
+    }
+
     public Integer getTotal() {
         return total;
     }
@@ -64,6 +74,7 @@ public class MovieDetails {
                 ", description='" + description + '\'' +
                 ", thumbnail='" + thumbnail + '\'' +
                 ", likes=" + likes +
+                ", dislikes=" + dislikes +
                 ", total=" + total +
                 '}';
     }

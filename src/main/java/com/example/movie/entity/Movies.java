@@ -27,8 +27,20 @@ public class Movies {
     @Column(name = "thumbnail")
     private String thumbnail;
 
-    @Column(name = "rate")
-    private Double rate;
+//    @Column(name = "rate")
+//    private Double rate;
+
+    @Column(name = "positive")
+    private Integer positive;
+
+    @Column(name = "comments")
+    private Integer comments;
+
+    @Column(name = "likes")
+    private Integer likes;
+
+    @Column(name = "dislikes")
+    private Integer dislikes;
 
     public Integer getMovieId() {
         return movieId;
@@ -70,12 +82,44 @@ public class Movies {
         this.thumbnail = thumbnail;
     }
 
-    public Double getRate() {
-        return rate;
+//    public Double getRate() {
+//        return rate;
+//    }
+//
+//    public void setRate(Double rate) {
+//        this.rate = rate;
+//    }
+
+    public Integer getPositive() {
+        return positive;
     }
 
-    public void setRate(Double rate) {
-        this.rate = rate;
+    public void setPositive(Integer positive) {
+        this.positive = positive;
+    }
+
+    public Integer getComments() {
+        return comments;
+    }
+
+    public void setComments(Integer comments) {
+        this.comments = comments;
+    }
+
+    public Integer getLikes() {
+        return likes;
+    }
+
+    public void setLikes(Integer likes) {
+        this.likes = likes;
+    }
+
+    public Integer getDislikes() {
+        return dislikes;
+    }
+
+    public void setDislikes(Integer dislikes) {
+        this.dislikes = dislikes;
     }
 
     @Override
@@ -86,7 +130,10 @@ public class Movies {
                 ", trailerUrl='" + trailerUrl + '\'' +
                 ", lastCommentTime=" + lastCommentTime +
                 ", thumbnail='" + thumbnail + '\'' +
-                ", rate=" + rate +
+                ", positive=" + positive +
+                ", comments=" + comments +
+                ", likes=" + likes +
+                ", dislikes=" + dislikes +
                 '}';
     }
 }

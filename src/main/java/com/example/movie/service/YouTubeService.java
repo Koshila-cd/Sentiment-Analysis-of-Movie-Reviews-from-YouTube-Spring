@@ -28,12 +28,12 @@ public class YouTubeService {
     @Value(value = "${youtube.api.key}")
     private String developerKey;
 
-    @Value(value = "${youtube.api.client_secret}")
-    private String clientSecret;
+//    @Value(value = "${youtube.api.client_secret}")
+//    private String clientSecret;
 
     private static final String APPLICATION_NAME = "API code samples";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-//    private static final String CLIENT_SECRETS = "client_secret.json";
+    private static final String CLIENT_SECRETS = "client_secret.json";
     private static final Collection<String> SCOPES =
             Arrays.asList("https://www.googleapis.com/auth/youtube.readonly");
 
@@ -73,10 +73,8 @@ public class YouTubeService {
             movieDetails.setDescription(item.getSnippet().getDescription());
             movieDetails.setThumbnail(item.getSnippet().getThumbnails().getStandard().getUrl());
             movieDetails.setLikes(item.getStatistics().getLikeCount().intValue());
+            movieDetails.setDislikes(item.getStatistics().getDislikeCount().intValue());
             movieDetails.setTotal(item.getStatistics().getLikeCount().intValue() + item.getStatistics().getDislikeCount().intValue());
-            System.out.println("count!!!!");
-            System.out.println(item.getStatistics().getLikeCount());
-            System.out.println(item.getStatistics().getLikeCount().intValue() + item.getStatistics().getDislikeCount().intValue());
         });
 
         return movieDetails;
@@ -91,7 +89,7 @@ public class YouTubeService {
      */
     public Credential authorize(final NetHttpTransport httpTransport) throws IOException {
         // Load client secrets.
-        InputStream in = YouTubeService.class.getResourceAsStream(clientSecret);
+        InputStream in = YouTubeService.class.getResourceAsStream(CLIENT_SECRETS);
         GoogleClientSecrets clientSecrets =
                 GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
         // Build flow and trigger user authorization request.

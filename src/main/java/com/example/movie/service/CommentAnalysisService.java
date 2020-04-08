@@ -95,26 +95,31 @@ public class CommentAnalysisService {
                         String comment = item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay();
                         log.info("============================================");
                         log.info("new comment: {}", comment);
-                        noOfComments.getAndIncrement();
+//                        noOfComments.getAndIncrement();
                         final String sentiment = pythonService.analyse(comment, description);
                         log.info("sentiment: {}", sentiment);
 
+                        if (!"None".equals(sentiment)) {
+                            noOfComments.getAndIncrement();
+                            movies.setComments(noOfComments.intValue());
+                        }
+
                         if ("p".equals(sentiment)) {
                             positive.getAndIncrement();
-                            Integer newLikes = 0;
+                            movies.setPositive(positive.intValue());
 
                             try {
-                                newLikes = youTubeService.getMovieDetails(videoId).getLikes();
+                                movies.setLikes(youTubeService.getMovieDetails(videoId).getLikes());
+                                movies.setDislikes(youTubeService.getMovieDetails(videoId).getDislikes());
                             } catch (GeneralSecurityException e) {
                                 e.printStackTrace();
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                            if (newLikes > 0) {
-                                System.out.println("NEW LIKES!!!");
-                                System.out.println(newLikes);
-                            }
-//                            rate = positive.doubleValue()/noOfComments.doubleValue();
+
+//                            movies.setRate((double) (((positive.intValue() + newLikes) / (noOfComments.intValue() + total))*100));
+//                            System.out.println("RATE!!!");
+//                            System.out.println(movies.getRate());
                         }
 
                     } else {
