@@ -1,8 +1,5 @@
 package com.example.movie.entity;
 
-import com.google.api.client.util.DateTime;
-import com.google.api.services.youtube.model.Thumbnail;
-
 import javax.persistence.*;
 import java.util.Date;
 
@@ -27,8 +24,7 @@ public class Movies {
     @Column(name = "thumbnail")
     private String thumbnail;
 
-    @Column(name = "rate")
-    private Double rate;
+    private String rate;
 
     @Column(name = "positive")
     private Integer positive;
@@ -82,11 +78,11 @@ public class Movies {
         this.thumbnail = thumbnail;
     }
 
-    public Double getRate() {
+    public String getRate() {
         return rate;
     }
 
-    public void setRate(Double rate) {
+    public void setRate(String rate) {
         this.rate = rate;
     }
 
