@@ -60,8 +60,8 @@ public class MoviesResource {
         return movie;
     }
 
-    @Autowired
-    private CommentAnalysisService commentAnalysisService;
+//    @Autowired
+//    private CommentAnalysisService commentAnalysisService;
 
 //    @GetMapping("analysingComments/{id}")
 //    public void analysingComments(@PathVariable("id") String id) {

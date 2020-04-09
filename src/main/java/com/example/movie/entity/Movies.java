@@ -27,8 +27,8 @@ public class Movies {
     @Column(name = "thumbnail")
     private String thumbnail;
 
-//    @Column(name = "rate")
-//    private Double rate;
+    @Column(name = "rate")
+    private Double rate;
 
     @Column(name = "positive")
     private Integer positive;
@@ -82,13 +82,13 @@ public class Movies {
         this.thumbnail = thumbnail;
     }
 
-//    public Double getRate() {
-//        return rate;
-//    }
-//
-//    public void setRate(Double rate) {
-//        this.rate = rate;
-//    }
+    public Double getRate() {
+        return rate;
+    }
+
+    public void setRate(Double rate) {
+        this.rate = rate;
+    }
 
     public Integer getPositive() {
         return positive;
@@ -130,6 +130,7 @@ public class Movies {
                 ", trailerUrl='" + trailerUrl + '\'' +
                 ", lastCommentTime=" + lastCommentTime +
                 ", thumbnail='" + thumbnail + '\'' +
+                ", rate=" + rate +
                 ", positive=" + positive +
                 ", comments=" + comments +
                 ", likes=" + likes +

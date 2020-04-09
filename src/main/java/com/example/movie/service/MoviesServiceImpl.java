@@ -12,8 +12,10 @@
 
 package com.example.movie.service;
 
+import com.example.movie.entity.MovieRatesView;
 import com.example.movie.entity.Movies;
 import com.example.movie.entity.MoviesVO;
+import com.example.movie.repository.MovieRateRepository;
 import com.example.movie.repository.MoviesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,9 @@ public class MoviesServiceImpl implements MoviesService {
     @Autowired
     private CommentAnalysisService commentAnalysisService;
 
+    @Autowired
+    private MovieRateRepository movieRateRepository;
+
     /**
      * {@inheritDoc}
      */
@@ -50,7 +55,6 @@ public class MoviesServiceImpl implements MoviesService {
             Movies movies1 = commentAnalysisService.analysingComments(videoId, movies);
             movies.setLastCommentTime(movies1.getLastCommentTime());
             movies.setThumbnail(youTubeService.getMovieDetails(videoId).getThumbnail());
-//            movies.setRate(movies1.getRate());
 
             moviesRepository.save(movies);
         }
@@ -64,6 +68,14 @@ public class MoviesServiceImpl implements MoviesService {
     @Override
     public Iterable<Movies> getAllMovies() {
         Iterable<Movies> movies = this.moviesRepository.findAll();
+
+        movies.forEach(movie -> {
+            MovieRatesView rate = movieRateRepository.getRate(movie.getMovieId());
+            if (rate != null) {
+                movie.setRate(rate.getRate());
+            }
+        });
+
         return movies;
     }
 
