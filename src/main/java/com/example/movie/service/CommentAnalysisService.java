@@ -29,9 +29,6 @@ public class CommentAnalysisService {
     @Value(value = "${youtube.api.key}")
     private String developerKey;
 
-    private int negative = 0;
-
-
     @Autowired
     private PythonService pythonService;
 
@@ -55,6 +52,7 @@ public class CommentAnalysisService {
         YouTube youtubeService = youTubeService.getService();
         Movies movies = movie;
         String description = youTubeService.getMovieDetails(videoId).getDescription();
+        String title = movies.getMovieName();
 
         // Define and execute the API request
         YouTube.CommentThreads.List request = youtubeService.commentThreads()
@@ -96,7 +94,7 @@ public class CommentAnalysisService {
                         log.info("============================================");
                         log.info("new comment: {}", comment);
 //                        noOfComments.getAndIncrement();
-                        final String sentiment = pythonService.analyse(comment, description);
+                        final String sentiment = pythonService.analyse(comment, description, title);
                         log.info("sentiment: {}", sentiment);
 
                         if (!"None".equals(sentiment)) {

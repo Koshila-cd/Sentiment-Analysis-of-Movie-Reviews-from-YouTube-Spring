@@ -99,6 +99,6 @@ public class MoviesResource {
     @PostMapping(path = "/py")
     public @ResponseBody
     String getFromPython(@RequestBody PythonVO pythonVO) {
-        return pythonService.analyse(pythonVO.getComment(), pythonVO.getDescription());
+        return pythonService.analyse(pythonVO.getComment(), pythonVO.getDescription(), pythonVO.getTitle());
     }
 }

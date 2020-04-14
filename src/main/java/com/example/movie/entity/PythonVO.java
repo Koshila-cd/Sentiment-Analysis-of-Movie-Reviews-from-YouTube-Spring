@@ -6,6 +6,8 @@ public class PythonVO {
 
     private String description;
 
+    private String title;
+
     public String getComment() {
         return comment;
     }
@@ -20,5 +22,13 @@ public class PythonVO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

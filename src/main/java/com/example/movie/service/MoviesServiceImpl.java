@@ -40,7 +40,6 @@ public class MoviesServiceImpl implements MoviesService {
     @Autowired
     private MovieRateRepository movieRateRepository;
 
-    private static DecimalFormat df2 = new DecimalFormat("#.##");
     /**
      * {@inheritDoc}
      */

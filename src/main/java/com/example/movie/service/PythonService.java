@@ -27,13 +27,14 @@ public class PythonService {
      *
      * @return Python response
      */
-    public String analyse(String comment, String description) {
+    public String analyse(String comment, String description, String title) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         Map<String, String> fieldMap = new HashMap<>();
         fieldMap.put("comment", comment);
         fieldMap.put("description", description);
+        fieldMap.put("title", title);
 
         StringBuilder json = new StringBuilder();
 
