@@ -3,14 +3,12 @@ spring:
     hibernate:
       ddl-auto: update
   datasource:
-#    url: jdbc:mysql://127.0.0.1:3306/movies
     url: jdbc:mysql://database-1.c8rqqx6xupu3.us-east-2.rds.amazonaws.com/movies
     username: admin
     password: magicoftheMoment37
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
     max-pool-size: 10
 
 youtube:
   api:
     key: AIzaSyBERRsW1tvyhIFH4FaTbzwF5BETUq0ojpQ
-#    AIzaSyCntQXAorm69Yw5VKaAFUIOBwFOD6GQhig

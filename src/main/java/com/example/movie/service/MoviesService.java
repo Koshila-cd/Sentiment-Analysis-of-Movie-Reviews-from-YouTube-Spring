@@ -61,4 +61,6 @@ public interface MoviesService {
      *
      */
     void updateMovie(Movies movie);
+
+    Boolean checkSchedulerRun();
 }

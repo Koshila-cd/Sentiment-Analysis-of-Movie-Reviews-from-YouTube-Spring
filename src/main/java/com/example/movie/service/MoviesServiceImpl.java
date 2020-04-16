@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.text.DecimalFormat;
 import java.util.Optional;
 
 @Service
@@ -73,7 +72,7 @@ public class MoviesServiceImpl implements MoviesService {
         movies.forEach(movie -> {
             MovieRatesView rate = movieRateRepository.getRate(movie.getMovieId());
             if (rate != null) {
-                movie.setRate(String.format("%.0f",rate.getRate()) + "%");
+                movie.setRate(String.format("%.0f", rate.getRate()) + "%");
             }
         });
 
@@ -106,6 +105,11 @@ public class MoviesServiceImpl implements MoviesService {
     @Override
     public void updateMovie(Movies movie) {
         moviesRepository.save(movie);
+    }
+
+    @Override
+    public Boolean checkSchedulerRun() {
+        return this.movieRateRepository.checkSchedulerRun();
     }
 
 }

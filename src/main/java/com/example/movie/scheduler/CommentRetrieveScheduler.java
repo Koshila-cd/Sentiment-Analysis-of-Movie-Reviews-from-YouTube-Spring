@@ -28,24 +28,30 @@ public class CommentRetrieveScheduler {
 
     @Scheduled(fixedRate = 60000)
     public void getCommentScheduler() {
-        log.info("comment scheduler started...");
-        Iterable<Movies> allMovies = moviesService.getAllMovies();
-        if (allMovies != null) {
-            List<Movies> movies = StreamSupport.stream(allMovies.spliterator(), false)
-                    .collect(Collectors.toList());
-            movies.stream().forEach(movie -> {
-                try {
-                    commentAnalysisService.analysingComments(movie.getTrailerUrl().split("=")[1], movie);
+        if (moviesService.checkSchedulerRun()) {
 
-                    moviesService.updateMovie(movie);
-                } catch (GeneralSecurityException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return;
-            });
+            log.info("comment scheduler started...");
+            Iterable<Movies> allMovies = moviesService.getAllMovies();
+            if (allMovies != null) {
+                List<Movies> movies = StreamSupport.stream(allMovies.spliterator(), false)
+                        .collect(Collectors.toList());
+                movies.stream().forEach(movie -> {
+                    try {
+                        commentAnalysisService.analysingComments(movie.getTrailerUrl().split("=")[1], movie);
+
+                        moviesService.updateMovie(movie);
+                    } catch (GeneralSecurityException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return;
+                });
+            }
+            log.info("comment scheduler end.");
+
+        } else {
+            log.info("scheduler is off.");
         }
-        log.info("comment scheduler end.");
     }
 }
