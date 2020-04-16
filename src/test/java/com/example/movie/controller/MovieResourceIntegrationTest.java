@@ -15,30 +15,30 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-@RunWith(SpringRunner.class)
-@WebMvcTest(MoviesResource.class)
+//@RunWith(SpringRunner.class)
+//@WebMvcTest(MoviesResource.class)
 public class MovieResourceIntegrationTest {
 
-    @Autowired
-    private MockMvc mvc;
-
-    @MockBean
-    private MoviesService moviesService;
-
-    @Test
-    public void whenGetAllMovies_thenReturnJson()
-            throws Exception {
-
-        mvc.perform(get("/movies/all")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void whenAddAMovie_thenReturnObjectMovie() throws Exception {
-
-        mvc.perform(post("/movies/add")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
+//    @Autowired
+//    private MockMvc mvc;
+//
+//    @MockBean
+//    private MoviesService moviesService;
+//
+////    @Test
+//    public void whenGetAllMovies_thenReturnJson()
+//            throws Exception {
+//
+//        mvc.perform(get("/movies/all")
+//                .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk());
+//    }
+//
+////    @Test
+//    public void whenAddAMovie_thenReturnObjectMovie() throws Exception {
+//
+//        mvc.perform(post("/movies/add")
+//                .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk());
+//    }
 }
