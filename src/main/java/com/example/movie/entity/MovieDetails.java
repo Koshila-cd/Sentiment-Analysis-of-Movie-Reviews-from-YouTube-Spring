@@ -1,7 +1,6 @@
 package com.example.movie.entity;
 
 import com.google.api.services.youtube.model.Thumbnail;
-import jnr.ffi.annotations.In;
 
 import java.math.BigInteger;
 

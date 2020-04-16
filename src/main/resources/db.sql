@@ -1,4 +1,4 @@
-use movies,
+use movies;
 
 create table properties(
     name varchar(100),

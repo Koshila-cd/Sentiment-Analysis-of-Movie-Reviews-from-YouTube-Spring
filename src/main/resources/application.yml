@@ -1,13 +1,10 @@
 spring:
-  jpa:
-    hibernate:
-      ddl-auto: update
   datasource:
-    url: jdbc:mysql://database-1.c8rqqx6xupu3.us-east-2.rds.amazonaws.com/movies
+    url: jdbc:mysql://database-1.c8rqqx6xupu3.us-east-2.rds.amazonaws.com:3306/movies?useUnicode=true&characterEncoding=utf8&useSSL=false&relaxAutoCommit=true
     username: admin
     password: magicoftheMoment37
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    max-pool-size: 10
+    driver-class-name: com.mysql.jdbc.Driver
+    max-pool-size: 5
 
 youtube:
   api:

@@ -2,9 +2,6 @@ package com.example.movie.service;
 
 import com.example.movie.entity.Movies;
 import com.example.movie.repository.MoviesRepository;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;

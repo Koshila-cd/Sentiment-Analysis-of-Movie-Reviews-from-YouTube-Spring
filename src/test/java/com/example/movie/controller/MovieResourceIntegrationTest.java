@@ -2,8 +2,6 @@ package com.example.movie.controller;
 
 import com.example.movie.entity.Movies;
 import com.example.movie.service.MoviesService;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
