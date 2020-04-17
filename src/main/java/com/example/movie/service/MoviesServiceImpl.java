@@ -17,6 +17,8 @@ import com.example.movie.entity.Movies;
 import com.example.movie.entity.MoviesVO;
 import com.example.movie.repository.MovieRateRepository;
 import com.example.movie.repository.MoviesRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,8 @@ import java.util.Optional;
 
 @Service
 public class MoviesServiceImpl implements MoviesService {
+
+    private final Logger log = LoggerFactory.getLogger(MoviesServiceImpl.class);
 
     @Autowired
     private MoviesRepository moviesRepository;
@@ -44,7 +48,7 @@ public class MoviesServiceImpl implements MoviesService {
      */
     @Override
     public Movies addNewMovie(MoviesVO moviesVO) throws GeneralSecurityException, IOException {
-
+        log.info("MoviesServiceImpl.addNewMovie() moviesVO {}", moviesVO);
         Movies movies = new Movies();
         movies.setMovieName(moviesVO.getMovieName());
         movies.setTrailerUrl(moviesVO.getTrailerUrl());
@@ -67,6 +71,7 @@ public class MoviesServiceImpl implements MoviesService {
      */
     @Override
     public Iterable<Movies> getAllMovies() {
+        log.info("MoviesServiceImpl.getAllMovies()");
         Iterable<Movies> movies = this.moviesRepository.findAll();
 
         movies.forEach(movie -> {
@@ -95,7 +100,7 @@ public class MoviesServiceImpl implements MoviesService {
      */
     @Override
     public String getFromPython(String sentiment) {
-
+        log.info("MoviesServiceImpl.getFromPython() sentiment {}", sentiment);
         return sentiment;
     }
 
@@ -104,11 +109,13 @@ public class MoviesServiceImpl implements MoviesService {
      */
     @Override
     public void updateMovie(Movies movie) {
+        log.info("MoviesServiceImpl.updateMovie() movie {}", movie);
         moviesRepository.save(movie);
     }
 
     @Override
     public Boolean checkSchedulerRun() {
+        log.info("MoviesServiceImpl.checkSchedulerRun()");
         return this.movieRateRepository.checkSchedulerRun();
     }
 

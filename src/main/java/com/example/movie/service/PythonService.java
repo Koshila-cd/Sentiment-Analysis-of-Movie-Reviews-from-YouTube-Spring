@@ -1,8 +1,9 @@
 package com.example.movie.service;
 
-import com.example.movie.entity.MoviesVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.*;
@@ -14,6 +15,8 @@ import java.util.Map;
 
 @Service
 public class PythonService {
+
+    private final Logger log = LoggerFactory.getLogger(PythonService.class);
 
     @Autowired
     @Qualifier("nonSecureRestTemplate")
@@ -28,6 +31,7 @@ public class PythonService {
      * @return Python response
      */
     public String analyse(String comment, String description, String title) {
+        log.info("PythonService.analyse() comment {}, description {}, title {}, ", comment, description, title);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -50,7 +54,7 @@ public class PythonService {
                 "http://127.0.0.1:5000/data",
                 HttpMethod.POST, new HttpEntity<>(json.toString(), headers), String.class);
 
-
+        log.info("PythonService response {}", response.getBody());
         return response.getBody();
     }
 

@@ -15,12 +15,14 @@ package com.example.movie.controller;
 import com.example.movie.entity.Movies;
 import com.example.movie.entity.MoviesVO;
 import com.example.movie.entity.PythonVO;
-import com.example.movie.service.CommentAnalysisService;
 import com.example.movie.service.MoviesService;
 import com.example.movie.service.PythonService;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +35,8 @@ import java.util.Optional;
 @RequestMapping(path = "/movies")
 public class MoviesResource {
 
+    private final Logger log = LoggerFactory.getLogger(MoviesResource.class);
+
     @Autowired
     private MoviesService moviesService;
 
@@ -42,6 +46,7 @@ public class MoviesResource {
     @PostMapping(path = "/add")
     public @ResponseBody
     ResponseEntity<Movies> addNewMovie(@RequestBody MoviesVO moviesVO) throws GeneralSecurityException, IOException, ParseException {
+        log.info("addNewMovie() moviesVO {}", moviesVO);
         Movies movieAdded = this.moviesService.addNewMovie(moviesVO);
         return new ResponseEntity<>(movieAdded, HttpStatus.CREATED);
     }
@@ -49,6 +54,7 @@ public class MoviesResource {
     @GetMapping(path = "/all")
     public @ResponseBody
     Iterable<Movies> getAllMovies() {
+        log.info("getAllMovies()");
         Iterable<Movies> movies = this.moviesService.getAllMovies();
         return movies;
     }
@@ -56,6 +62,7 @@ public class MoviesResource {
     @GetMapping(path = "/{id}")
     public @ResponseBody
     Optional<Movies> getMovie(@PathVariable("id") final int id) throws GeneralSecurityException, IOException, ParseException {
+        log.info("getMovie()");
         Optional<Movies> movie = this.moviesService.getMovie(id);
         return movie;
     }
@@ -99,6 +106,7 @@ public class MoviesResource {
     @PostMapping(path = "/py")
     public @ResponseBody
     String getFromPython(@RequestBody PythonVO pythonVO) {
+        log.info("getFromPython() pythonVO {}", pythonVO);
         return pythonService.analyse(pythonVO.getComment(), pythonVO.getDescription(), pythonVO.getTitle());
     }
 }
