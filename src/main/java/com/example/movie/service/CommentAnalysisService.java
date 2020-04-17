@@ -73,6 +73,8 @@ public class CommentAnalysisService {
             latestCommentTime = new Date(items.get(0).getSnippet().getTopLevelComment().getSnippet().getUpdatedAt().getValue());
         }
 
+        Date lastCommentTime = movie.getLastCommentTime();
+
         new Thread(() -> {
 
 //            try {
@@ -87,9 +89,9 @@ public class CommentAnalysisService {
 
                         DateTime time = item.getSnippet().getTopLevelComment().getSnippet().getUpdatedAt();
                         Date commentTime = new Date(time.getValue());
-                        log.info("last time: {}, new comment time: {}", movie.getLastCommentTime() == null ? "NO" : lastTimeFormat.format(movie.getLastCommentTime()), lastTimeFormat.format(commentTime));
+                        log.info("last time: {}, new comment time: {}", lastCommentTime == null ? "NO" : lastCommentTime, lastCommentTime);
 
-                        if (movie.getLastCommentTime() == null || movie.getLastCommentTime().before(commentTime)) {
+                        if (lastCommentTime == null || lastCommentTime.before(commentTime)) {
                             String comment = item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay();
 
                             log.info("============================================");
