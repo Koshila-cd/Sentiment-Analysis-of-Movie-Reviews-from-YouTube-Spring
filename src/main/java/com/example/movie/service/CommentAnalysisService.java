@@ -60,7 +60,7 @@ public class CommentAnalysisService {
 
         AtomicReference<CommentThreadListResponse> response = new AtomicReference<>(request.setKey(developerKey)
                 .setVideoId(videoId)
-                .setMaxResults(movie.getLastCommentTime() == null ? 10L : 3L)
+                .setMaxResults(movie.getLastCommentTime() == null ? 100L : 3L)
                 .execute());
 
         log.info("youtube response size {}", response.get().getItems().size());
@@ -73,82 +73,83 @@ public class CommentAnalysisService {
             latestCommentTime = new Date(items.get(0).getSnippet().getTopLevelComment().getSnippet().getUpdatedAt().getValue());
         }
 
-
-//        new Thread(() -> {
+        new Thread(() -> {
 
 //            try {
-        String nextPageToken;
-        AtomicBoolean completed = new AtomicBoolean(false);
-
+            AtomicBoolean completed = new AtomicBoolean(false);
+//
+//                int loopCount = 0;
 
 //                do {
-        response.get().getItems()
-                .stream()
-                .forEach(item -> {
+            response.get().getItems()
+                    .stream()
+                    .forEach(item -> {
 
-                    DateTime time = item.getSnippet().getTopLevelComment().getSnippet().getUpdatedAt();
-                    Date commentTime = new Date(time.getValue());
-                    log.info("last time: {}, new comment time: {}", movie.getLastCommentTime() == null ? "NO" : lastTimeFormat.format(movie.getLastCommentTime()), lastTimeFormat.format(commentTime));
-                    if (movie.getLastCommentTime() == null || movie.getLastCommentTime().before(commentTime)) {
-                        String comment = item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay();
-                        log.info("============================================");
-                        log.info("new comment: {}", comment);
+                        DateTime time = item.getSnippet().getTopLevelComment().getSnippet().getUpdatedAt();
+                        Date commentTime = new Date(time.getValue());
+                        log.info("last time: {}, new comment time: {}", movie.getLastCommentTime() == null ? "NO" : lastTimeFormat.format(movie.getLastCommentTime()), lastTimeFormat.format(commentTime));
+                        if (movie.getLastCommentTime() == null || movie.getLastCommentTime().before(commentTime)) {
+                            String comment = item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay();
+                            log.info("============================================");
+                            log.info("new comment: {}", comment);
 //                        noOfComments.getAndIncrement();
-                        final String sentiment = pythonService.analyse(comment, description, title);
-                        log.info("sentiment: {}", sentiment);
+                            final String sentiment = pythonService.analyse(comment, description, title);
+                            log.info("sentiment: {}", sentiment);
 
-                        if (!"None".equals(sentiment)) {
-                            noOfComments.getAndIncrement();
-                            movies.setComments(noOfComments.intValue());
-                        }
-
-                        if ("p".equals(sentiment)) {
-                            positive.getAndIncrement();
-                            movies.setPositive(positive.intValue());
-
-                            try {
-                                movies.setLikes(youTubeService.getMovieDetails(videoId).getLikes());
-                                movies.setDislikes(youTubeService.getMovieDetails(videoId).getDislikes());
-                            } catch (GeneralSecurityException e) {
-                                e.printStackTrace();
-                            } catch (IOException e) {
-                                e.printStackTrace();
+                            if (!"None".equals(sentiment)) {
+                                noOfComments.getAndIncrement();
+                                movies.setComments(noOfComments.intValue());
                             }
+
+                            if ("p".equals(sentiment)) {
+                                positive.getAndIncrement();
+                                movies.setPositive(positive.intValue());
+
+                                try {
+                                    movies.setLikes(youTubeService.getMovieDetails(videoId).getLikes());
+                                    movies.setDislikes(youTubeService.getMovieDetails(videoId).getDislikes());
+                                } catch (GeneralSecurityException e) {
+                                    e.printStackTrace();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
 
 //                            movies.setRate((double) (((positive.intValue() + newLikes) / (noOfComments.intValue() + total))*100));
 //                            System.out.println("RATE!!!");
 //                            System.out.println(movies.getRate());
+                            }
+
+                        } else {
+                            completed.set(true);
+                            return;
                         }
 
-                    } else {
-                        completed.set(true);
-                        return;
-                    }
+                    });
 
-                });
-
-//                nextPageToken = response.get().getNextPageToken();
+//                    loopCount++;
 //
-//                response.set(request.setKey(developerKey)
-//                        .setVideoId(videoId)
-//                        .setMaxResults(10L)
-//                        .setPageToken(nextPageToken)
-//                        .execute());
-
-
-//                Thread.sleep(1000);
-
-//                } while (nextPageToken != null);
+//                    if (movie.getLastCommentTime() == null) {
+//                        response.set(request.setKey(developerKey)
+//                                .setVideoId(videoId)
+//                                .setMaxResults(10L)
+//                                .setPageToken(response.get().getNextPageToken())
+//                                .execute());
+//
+//                        Thread.sleep(1000);
+//                        log.info("loop runs {}", loopCount);
+//                    } else {
+//                        break;
+//                    }
+//                } while (loopCount == 2);
 //            } catch (IOException | InterruptedException e) {
 //                e.printStackTrace();
 //            }
 
-//        }).start();
+        }).start();
 
         log.info("latest and next comment date: {}", latestCommentTime);
         if (latestCommentTime != null) movies.setLastCommentTime(latestCommentTime);
         log.info("updated positive: {}", positive);
-
         return movies;
     }
 }
