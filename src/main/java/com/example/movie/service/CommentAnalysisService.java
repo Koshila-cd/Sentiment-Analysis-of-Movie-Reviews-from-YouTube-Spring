@@ -88,11 +88,13 @@ public class CommentAnalysisService {
                         DateTime time = item.getSnippet().getTopLevelComment().getSnippet().getUpdatedAt();
                         Date commentTime = new Date(time.getValue());
                         log.info("last time: {}, new comment time: {}", movie.getLastCommentTime() == null ? "NO" : lastTimeFormat.format(movie.getLastCommentTime()), lastTimeFormat.format(commentTime));
+
                         if (movie.getLastCommentTime() == null || movie.getLastCommentTime().before(commentTime)) {
                             String comment = item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay();
+
                             log.info("============================================");
                             log.info("new comment: {}", comment);
-//                        noOfComments.getAndIncrement();
+
                             final String sentiment = pythonService.analyse(comment, description, title);
                             log.info("sentiment: {}", sentiment);
 
@@ -114,11 +116,10 @@ public class CommentAnalysisService {
                                     e.printStackTrace();
                                 }
 
-//                            movies.setRate((double) (((positive.intValue() + newLikes) / (noOfComments.intValue() + total))*100));
-//                            System.out.println("RATE!!!");
-//                            System.out.println(movies.getRate());
                             }
 
+                            moviesService.updateMovie(movie);
+                            log.info("updated");
                         } else {
                             completed.set(true);
                             return;
