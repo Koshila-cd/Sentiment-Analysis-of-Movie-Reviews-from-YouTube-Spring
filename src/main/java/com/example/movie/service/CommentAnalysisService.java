@@ -87,46 +87,49 @@ public class CommentAnalysisService {
                     .stream()
                     .forEach(item -> {
 
-                        DateTime time = item.getSnippet().getTopLevelComment().getSnippet().getUpdatedAt();
-                        Date commentTime = new Date(time.getValue());
-                        log.info("last time: {}, new comment time: {}", lastCommentTime == null ? "NO" : lastCommentTime, lastCommentTime);
+                        try {
+                            DateTime time = item.getSnippet().getTopLevelComment().getSnippet().getUpdatedAt();
+                            Date commentTime = new Date(time.getValue());
+                            log.info("last time: {}, new comment time: {}", lastCommentTime == null ? "NO" : lastCommentTime, lastCommentTime);
 
-                        if (lastCommentTime == null || lastCommentTime.before(commentTime)) {
-                            String comment = item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay();
+                            if (lastCommentTime == null || lastCommentTime.before(commentTime)) {
+                                String comment = item.getSnippet().getTopLevelComment().getSnippet().getTextDisplay();
 
-                            log.info("============================================");
-                            log.info("new comment: {}", comment);
+                                log.info("============================================");
+                                log.info("new comment: {}", comment);
 
-                            final String sentiment = pythonService.analyse(comment, description, title);
-                            log.info("sentiment: {}", sentiment);
+                                final String sentiment = pythonService.analyse(comment, description, title);
+                                log.info("sentiment: {}", sentiment);
 
-                            if (!"None".equals(sentiment)) {
-                                noOfComments.getAndIncrement();
-                                movies.setComments(noOfComments.intValue());
-                            }
-
-                            if ("p".equals(sentiment)) {
-                                positive.getAndIncrement();
-                                movies.setPositive(positive.intValue());
-
-                                try {
-                                    movies.setLikes(youTubeService.getMovieDetails(videoId).getLikes());
-                                    movies.setDislikes(youTubeService.getMovieDetails(videoId).getDislikes());
-                                } catch (GeneralSecurityException e) {
-                                    e.printStackTrace();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
+                                if (!"None".equals(sentiment)) {
+                                    noOfComments.getAndIncrement();
+                                    movies.setComments(noOfComments.intValue());
                                 }
 
+                                if ("p".equals(sentiment)) {
+                                    positive.getAndIncrement();
+                                    movies.setPositive(positive.intValue());
+
+                                    try {
+                                        movies.setLikes(youTubeService.getMovieDetails(videoId).getLikes());
+                                        movies.setDislikes(youTubeService.getMovieDetails(videoId).getDislikes());
+                                    } catch (GeneralSecurityException e) {
+                                        e.printStackTrace();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+
+                                moviesService.updateMovie(movie);
+                                log.info("updated");
+                            } else {
+                                completed.set(true);
+                                return;
                             }
-
-                            moviesService.updateMovie(movie);
-                            log.info("updated");
-                        } else {
-                            completed.set(true);
-                            return;
+                        } catch (Exception e) {
+                            log.info("warning");
                         }
-
                     });
 
 //                    loopCount++;
